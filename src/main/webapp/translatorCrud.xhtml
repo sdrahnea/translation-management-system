@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+        <p:panel id="translatorCrud" header="#{translatorController.crudFormCaption} "> 
+            <p:panelGrid columns="2">
+                <h:outputLabel value="Name" />
+                <p:inputText  value="#{translatorController.translator.name}"
+                              required="true"
+                              requiredMessage="Please, choose translator name!"
+                              />
+
+                <h:outputLabel value="Email" />
+                <p:inputText  value="#{translatorController.translator.email}"
+                              required="true"
+                              requiredMessage="Please, choose email!"
+                              validatorMessage="Invalid email format"
+                              >
+                    <f:validateRegex
+                        pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                </p:inputText>
+
+
+                <h:outputLabel value="Contact phone" />
+                <p:inputText  value="#{translatorController.translator.contactPhone}"
+                              required="true"
+                              requiredMessage="Please, choose phone!"
+                              />
+
+                <h:outputLabel value="Alternative contact" />
+                <p:inputText  value="#{translatorController.translator.alternativeContact}"/>
+
+                <h:outputLabel value="Country" />
+                <p:selectOneMenu
+                    value="#{translatorController.selectedCountry}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="countryConverter"
+                    required="true"
+                    requiredMessage="Please, choose country!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.countries}" 
+                                   var="country" 
+                                   itemLabel="#{country.name}" 
+                                   itemValue="#{country}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Education degree" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedEducationDegree}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="educationDegreeConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.educationDegrees}" 
+                                   var="educationDegree" 
+                                   itemLabel="#{educationDegree.name}" 
+                                   itemValue="#{educationDegree}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Years of experience" />
+                <p:inputText  value="#{translatorController.translator.yearsOfExperience}"/>
+
+                <h:outputLabel value="Input language 1" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedInputLanguage1}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    required="true"
+                    requiredMessage="Please, choose innput language 1!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Input language 2" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedInputLanguage2}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Input language 3" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedInputLanguage3}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" 
+                                   />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Output language (Native)" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedOutputLanguage}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    required="true"
+                    requiredMessage="Please, choose output language!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" 
+                                   />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="CAT" />
+                <p:selectCheckboxMenu value="#{translatorController.selectedCats}" 
+                                      label="CAT"
+                                      filter="true" 
+                                      filterMatchMode="startsWith" 
+                                      converter="catConverter"
+                                      >
+                    <f:selectItems value="#{translatorController.cats}" 
+                                   var="cat"
+                                   itemLabel="#{cat.name}" 
+                                   itemValue="#{cat}" 
+                                   />
+                </p:selectCheckboxMenu>
+
+                <h:outputLabel value="Translation rate" />
+                <p:inputText  value="#{translatorController.translator.translatorRate}"/>
+
+                <h:outputLabel value="Translate rate currency" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedTranslatorRateCurrency}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="currencyConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.currencies}" 
+                                   var="currency" 
+                                   itemLabel="#{currency.name}" 
+                                   itemValue="#{currency}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Proofreading rate" />
+                <p:inputText  value="#{translatorController.translator.proofReadingRate}"/>
+
+                <h:outputLabel value="Prof reading currency" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedProofReadingRateCurrency}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="currencyConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.currencies}" 
+                                   var="currency" 
+                                   itemLabel="#{currency.name}" 
+                                   itemValue="#{currency}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Minimum rate" />
+                <p:inputText  value="#{translatorController.translator.minimumRate}"/>
+
+                <h:outputLabel value="Minimum rate currency" />
+                <p:selectOneMenu 
+                    value="#{translatorController.selectedMinimumRateCurrency}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="currencyConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{translatorController.currencies}" 
+                                   var="currency" 
+                                   itemLabel="#{currency.name}" 
+                                   itemValue="#{currency}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Add new payment method" />
+                <p:panelGrid columns="2" id="paymentMethodGrid">
+                    <h:outputLabel value="Payment method" />
+                    <p:selectOneMenu 
+                        value="#{translatorController.selectedPaymentMethod}"
+                        filter="true" 
+                        filterMatchMode="contains"
+                        converter="paymentMethodConverter"
+                        >
+                        <f:selectItem itemLabel="Select One" itemValue="" />
+                        <f:selectItems value="#{translatorController.paymentMethodList}" 
+                                       var="pm" 
+                                       itemLabel="#{pm.name}" 
+                                       itemValue="#{pm}" />
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Description" />
+                    <p:inputTextarea  value="#{translatorController.paymentDescription}"/>
+
+                    <p:commandButton value="Add" 
+                                     actionListener="#{translatorController.addPaymentMethod}" 
+                                     update="paymentMethodGrid,paymentMethodDataTable"
+                                     icon="ui-icon-disk" />
+                    <p:commandButton value="Clear data" 
+                                     actionListener="#{translatorController.clearPaymentMethod}" 
+                                     update="paymentMethodGrid,paymentMethodDataTable"
+                                     icon="ui-icon-disk" />
+                </p:panelGrid>
+
+                <h:outputLabel value="Payment method" />
+                <p:dataTable id="paymentMethodDataTable" 
+                             var="tpaymenyMethod" 
+                             value="#{translatorController.translatorToPaymentMethodList}"
+                             editable="true"
+                             >
+                    <p:ajax event="rowEdit" listener="#{translatorController.onPaymentMethodEdit}" update=":form:growl" /> 
+                    <p:ajax event="rowEditCancel" listener="#{translatorController.onPaymentMethodCancel}" update=":form:growl" /> 
+                    
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Name" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{tpaymenyMethod.paymentMethod.name}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{tpaymenyMethod.paymentMethod.name}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Description" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{tpaymenyMethod.description}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{tpaymenyMethod.description}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Options" >  
+                        <p:rowEditor />  
+                    </p:column> 
+
+                </p:dataTable>
+
+                <h:outputLabel value="Service provided" />
+                <p:selectCheckboxMenu value="#{translatorController.selectedServiceProvideds}" 
+                                      label="Service provided"
+                                      filter="true" 
+                                      filterMatchMode="startsWith" 
+                                      converter="serviceProvidedConverter"
+                                      >
+                    <f:selectItems value="#{translatorController.serviceProvideds}" 
+                                   var="sp"
+                                   itemLabel="#{sp.name}" 
+                                   itemValue="#{sp}" 
+                                   />
+                </p:selectCheckboxMenu>
+                
+                <h:outputLabel value="Daily words Output" />
+                <p:inputText  value="#{translatorController.translator.dailyWordsOutput}"/>
+
+                <h:outputLabel value="References" />
+                <p:inputText  value="#{translatorController.translator.references}"/>
+
+                <h:outputLabel value="Link to Proz" />
+                <p:inputText  value="#{translatorController.translator.linkToProz}"/>
+
+                <h:outputLabel value="Translation area" />
+                <p:selectCheckboxMenu value="#{translatorController.selectedTranslationAreas}" 
+                                      label="Translation area"
+                                      filter="true" 
+                                      filterMatchMode="startsWith" 
+                                      converter="translationAreaConverter"
+                                      >
+                    <f:selectItems value="#{translatorController.traslationAreas}" 
+                                   var="ta"
+                                   itemLabel="#{ta.name}" 
+                                   itemValue="#{ta}" 
+                                   />
+                </p:selectCheckboxMenu>
+
+                <h:outputLabel value="General agreement conditions/NDA" />
+                <p:selectBooleanCheckbox  value="#{translatorController.translator.isAgreementSign}"/>
+
+                <h:outputLabel value="CV file" />                   
+                <p:outputPanel id="tdownloadlink">
+                    <p:commandLink  value="#{translatorController.translator.fileName}" 
+                                    ajax="false"
+                                    actionListener="#{translatorController.prepDownload}"
+                                    >
+                        <p:fileDownload value="#{translatorController.download}" />
+                    </p:commandLink>
+                    <p:fileUpload value="#{translatorController.translator.fileName}"
+                                  fileUploadListener="#{translatorController.handleFileUpload}"
+                                  mode="advanced"
+                                  update="form:tdownloadlink"
+                                  />
+                </p:outputPanel>     
+                
+                <h:outputText value="Rating" />
+                <p:rating value="#{translatorController.translatorFeedback.ratingAsNumber}" stars="10"/>
+
+                <h:outputLabel value="Rating comment" />
+                <p:inputTextarea value="#{translatorController.translatorFeedback.comment}"/>
+                
+                <p:commandButton value="Save" 
+                                 update="translatorCrud, form:growl"
+                                 actionListener="#{translatorController.saveTranslator}" 
+                                 action="#{translatorController.workflowController('translator')}" 
+                                 icon="ui-icon-disk" />
+                <p:commandButton value="Cancel" 
+                                 actionListener="#{translatorController.cancel}"
+                                 action="#{translatorController.workflowController('translator')}" 
+                                 immediate="true"
+                                 icon="ui-icon-disk" />
+            </p:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

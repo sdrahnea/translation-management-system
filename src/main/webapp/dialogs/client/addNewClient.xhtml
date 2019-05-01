@@ -1,0 +1,166 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Add new client" 
+              widgetVar="addNewClientDialog" 
+              minHeight="40" 
+              height="400"
+              appendTo="@(body)" 
+              modal="true"
+              >
+        <h:form id="addClientForm">
+            <p:panelGrid columns="2">
+                <h:outputLabel value="Name" />
+                <p:inputText  value="#{clientController.client.name}"/>
+
+                <h:outputLabel value="Country" />
+                <p:selectOneListbox 
+                    value="#{clientController.selectedCountry}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="countryConverter"
+                    >
+                    <f:selectItems value="#{clientController.countries}" 
+                                   var="country" 
+                                   itemLabel="#{country.name}" 
+                                   itemValue="#{country}" />
+                </p:selectOneListbox>
+
+                <h:outputLabel value="Address" />
+                <p:inputTextarea  value="#{clientController.client.address}"/>
+
+                <h:outputLabel for="name" value="Invoice email" />
+                <p:inputText  value="#{clientController.client.invoiceEmail}"/>
+
+                <h:outputLabel for="name" value="Description" />
+                <p:inputText  value="#{clientController.client.description}"/>
+
+                <h:outputLabel for="name" value="Website" />
+                <p:inputText  value="#{clientController.client.website}"/>
+
+                <h:outputLabel for="name" value="VAT" />
+                <p:inputText  value="#{clientController.client.vat}"/>
+
+                <h:outputLabel for="item" value="Segmentation" />
+                <p:selectOneListbox 
+                    value="#{clientController.selectedSegmentation}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="segmntationConverter"
+                    >
+                    <f:selectItems value="#{clientController.segmentations}" 
+                                   var="segmentation" 
+                                   itemLabel="#{segmentation.name}" 
+                                   itemValue="#{segmentation}" />
+                </p:selectOneListbox>
+
+                <h:outputLabel for="item" value="Sale manager" />
+                <p:selectOneListbox 
+                    value="#{clientController.selectedSaleManager}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="personConverter"
+                    >
+                    <f:selectItems value="#{clientController.saleManagers}" 
+                                   var="saleManager" 
+                                   itemLabel="#{saleManager.name}" 
+                                   itemValue="#{saleManager}" />
+                </p:selectOneListbox>
+
+                <h:outputLabel for="name" value="Add new contact" />
+                <p:commandButton value="Add" 
+                                 oncomplete="PF('contactPersonDialog').show();" 
+                                 />
+
+                <h:outputLabel for="name" value="Contact persons list" />
+                <p:dataTable id="contactperson" 
+                             var="contactPerson" 
+                             value="#{clientController.contactPersons}"
+                             editable="true"
+                             >
+                    <p:ajax event="rowEditCancel" listener="#{clientController.onContactPersonCancel}" update=":form:growl" /> 
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Name" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.name}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.name}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Invoiced email" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.email}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.email}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Phone" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.phone}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.phone}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Skype" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.skype}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.skype}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Options" >  
+                        <p:rowEditor />  
+                    </p:column> 
+
+                </p:dataTable>
+
+
+                <p:commandButton value="Save" 
+                                 actionListener="#{clientController.saveClient}" 
+                                 oncomplete="PF('addNewClientDialog').hide();" 
+                                 process="@all"
+                                 update="@all"
+                                 icon="ui-icon-disk" >
+                </p:commandButton>
+                <p:commandButton value="Cancel" 
+                                 actionListener="#{clientController.cancelClient}" 
+                                 oncomplete="PF('addNewClientDialog').hide();" 
+                                 update=":form:growl"
+                                 icon="ui-icon-disk" />
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

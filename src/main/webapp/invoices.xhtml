@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel>
+
+            <p:accordionPanel id="invoiceSearchFilters" activeIndex="-">
+                <p:tab title="Search fields">
+                    <p:panelGrid columns="6">
+                        <h:outputLabel value="Project Id" />
+                        <p:inputText  value="#{projectController.filterProjectId}"/>
+
+                        <h:outputLabel value="Project status" />
+                        <p:selectOneMenu
+                            value="#{projectController.filterProjectStatus}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="statusConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{projectController.statuses}" 
+                                           var="status" 
+                                           itemLabel="#{status.name}" 
+                                           itemValue="#{status}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Client name" />
+                        <p:inputText  value="#{projectController.filterClientName}"/>
+
+                        <h:outputLabel value="Translator name" />
+                        <p:inputText  value="#{projectController.filterTranslatorName}"/>
+
+                        <h:outputLabel value="Translator email" />
+                        <p:inputText  value="#{projectController.filterTranslatorEmail}"/>
+
+                        <h:outputLabel value="Sale manager" />
+                        <p:selectOneMenu
+                            value="#{projectController.filterSaleManager}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="personConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{projectController.managers}" 
+                                           var="manager" 
+                                           itemLabel="#{manager.name}" 
+                                           itemValue="#{manager}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Assigned manager" />
+                        <p:selectOneMenu
+                            value="#{projectController.filterAssignedManager}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="personConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{projectController.managers}" 
+                                           var="manager" 
+                                           itemLabel="#{manager.name}" 
+                                           itemValue="#{manager}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Second assigned manager" />
+                        <p:selectOneMenu
+                            value="#{projectController.filterSecondAssignedManager}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="personConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{projectController.managers}" 
+                                           var="manager" 
+                                           itemLabel="#{manager.name}" 
+                                           itemValue="#{manager}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Source language" />
+                        <p:selectOneMenu
+                            value="#{projectController.filterSourceLanguage}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="languageConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{projectController.languages}" 
+                                           var="language" 
+                                           itemLabel="#{language.name}" 
+                                           itemValue="#{language}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Output language" />
+                        <p:selectOneMenu
+                            value="#{projectController.filterOutputLanguage}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="languageConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{projectController.languages}" 
+                                           var="language" 
+                                           itemLabel="#{language.name}" 
+                                           itemValue="#{language}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Received date start" />
+                        <p:calendar  value="#{projectController.filterReceiveDateStart}"/>
+
+                        <h:outputLabel value="Received date end" />
+                        <p:calendar  value="#{projectController.filterReceiveDateEnd}"/>
+
+                        <h:outputLabel value="Deadline start" />
+                        <p:calendar  value="#{projectController.filterDeadlineStart}"/>
+
+                        <h:outputLabel value="Deadline end" />
+                        <p:calendar value="#{projectController.filterDeadlineEnd}"/>
+
+                        <h:outputLabel value="File name" />
+                        <p:inputText  value="#{projectController.filterFileName}"/>
+                    </p:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+            <p:panelGrid columns="3">
+
+                <p:commandButton value="Filter" 
+                                 actionListener="#{projectController.filter}" 
+                                 process="@form"
+                                 update="invoiceSearchFilters,invoiceDataTableView"
+                                 icon="ui-icon-disk" />
+
+                <p:commandButton value="Clear filters"  
+                                 actionListener="#{projectController.clearFilters}" 
+                                 process="@form"
+                                 update="invoiceSearchFilters,invoiceDataTableView"
+                                 icon="ui-icon-disk" />
+
+            </p:panelGrid>
+
+            <p:dataTable id="invoiceDataTableView" 
+                         var="project" 
+                         widgetVar="invoiceDataTable"
+                         value="#{projectController.invoiceList}"
+                         editable="true"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,25,50"
+                         sortMode="multiple"
+                         emptyMessage="No invoice found"
+                         >
+                <f:facet name="{Exporters}">
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/excel-icon.png" width="24"/>
+                        <p:dataExporter type="xls" target="invoiceDataTableView" fileName="invoices" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/csv-icon.png" width="24"/>
+                        <p:dataExporter type="csv" target="invoiceDataTableView" fileName="invoices" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/xml-icon.png" width="24"/>
+                        <p:dataExporter type="xml" target="invoiceDataTableView" fileName="invoices" />
+                    </h:commandLink>
+                </f:facet>
+
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all fields:" />
+                        <p:inputText id="globalFilterProject"
+                                     onkeyup="PF('invoiceDataTable').filter()" 
+                                     style="width:150px" 
+                                     placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column sortBy="#{project.id}">
+                    <f:facet name="header">  
+                        <h:outputText value="Project ID" />  
+                    </f:facet>
+                    <p:commandLink value="#{project.id}" 
+                                   action="#{projectController.workflowController('projectView','View')}"
+                                   >
+                        <f:setPropertyActionListener target="#{projectController.project}" value="#{project}" />
+                    </p:commandLink>
+                </p:column>
+
+                <p:column sortBy="#{project.status.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Project status" />  
+                    </f:facet>
+                    <h:outputText value="#{project.status.name}" />
+                </p:column>
+
+                <p:column sortBy="#{project.name}" filterBy="#{project.name}" footerText="contains" filterMatchMode="contains">
+                    <f:facet name="header">  
+                        <h:outputText value="Name" />  
+                    </f:facet>
+                    <p:cellEditor>  
+                        <f:facet name="output">  
+                            <h:outputText value="#{project.name}" />  
+                        </f:facet>  
+                        <f:facet name="input">  
+                            <p:inputText value="#{project.name}" />  
+                        </f:facet>  
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column sortBy="#{project.client.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Client" />  
+                    </f:facet>
+                    <h:outputText value="#{project.client.name}" />
+                </p:column>
+
+                <p:column sortBy="#{project.contactPerson.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Contact person" />  
+                    </f:facet>
+                    <h:outputText value="#{project.contactPerson.name}" />
+                </p:column>
+
+                <p:column sortBy="#{project.insertDate}">
+                    <f:facet name="header">  
+                        <h:outputText value="Received date" />  
+                    </f:facet>
+                    <p:cellEditor>  
+                        <f:facet name="output">  
+                            <h:outputText value="#{project.insertDate}" />  
+                        </f:facet>  
+                        <f:facet name="input">  
+                            <p:calendar value="#{project.insertDate}" />  
+                        </f:facet>  
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column sortBy="#{project.deadlineDate}">
+                    <f:facet name="header">  
+                        <h:outputText value="Deanline date" />  
+                    </f:facet>
+                    <p:cellEditor>  
+                        <f:facet name="output">  
+                            <h:outputText value="#{project.deadlineDate}" />  
+                        </f:facet>  
+                        <f:facet name="input">  
+                            <p:calendar value="#{project.deadlineDate}" />  
+                        </f:facet>  
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column sortBy="#{project.translationArea.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Translation area" />  
+                    </f:facet>
+                    <h:outputText value="#{project.translationArea.name}" />
+                </p:column>
+
+                <p:column sortBy="#{project.cat.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="CAT" />  
+                    </f:facet>
+                    <h:outputText value="#{project.cat.name}" />
+                </p:column>
+
+                <p:column sortBy="#{project.sourceLanguage.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Source language" />  
+                    </f:facet>
+                    <h:outputText value="#{project.sourceLanguage.name}" />
+                </p:column>
+
+                <p:column sortBy="#{project.destinatonLanguage.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Destination language" />  
+                    </f:facet>
+                    <h:outputText value="#{project.destinatonLanguage.name}" />
+                </p:column>
+
+            </p:dataTable>
+
+        </p:panel>
+    </ui:define>
+</ui:composition>

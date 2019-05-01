@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title>Main view</title>
+        </f:facet>
+        <link type="text/css" rel="stylesheet" href="../resources/css/default.css" />  
+        <style type="text/css">
+
+            .ui-widget, .ui-widget .ui-widget {
+                font-size:9px !important;
+                font-family: Verdana,Arial,sans-serif;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+            <p:growl id="growl" showDetail="true" sticky="true"/>
+
+            <p:layout fullPage="true">
+                <p:layoutUnit position="north" size="50" resizable="true" closable="true" collapsible="true" 
+                              rendered="false">
+
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="25" closable="true" collapsible="true">
+                    <p:growl id="messages"/>
+                    Footer
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center">
+                    <p:menubar>
+
+                        <p:menuitem value="Project" 
+                                    icon="ui-icon-document" 
+                                    action="project"
+                                    ajax="true" 
+                                    actionListener="#{projectController.initProject}"
+                                    >
+                        </p:menuitem>
+
+                        <p:menuitem value="Client" 
+                                    icon="ui-icon-star" 
+                                    action="client"
+                                    ajax="true" 
+                                    actionListener="#{clientController.initClient}"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.managerRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <p:menuitem value="Translator" 
+                                    icon="ui-icon-person" 
+                                    action="translator"
+                                    ajax="true" 
+                                    actionListener="#{translatorController.initTranslator}"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.managerRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <p:menuitem value="Archive" 
+                                    icon="ui-icon-close" 
+                                    outcome="archives"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.managerRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>                       
+
+                        <p:submenu label="Database" icon="ui-icon-document" 
+                                   rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.managerRole || mainController.loggedUser.systemRole}"
+                                   >
+                            <p:menuitem value="Import" 
+                                        icon="ui-icon-close" 
+                                        outcome="database"
+                                        rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.systemRole}"
+                                        >
+                            </p:menuitem>
+                        </p:submenu>
+                        <p:menuitem value="Users" 
+                                    outcome="users"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <p:submenu label="Settings" icon="ui-icon-gear" 
+                                   rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.systemRole}"
+                                   >
+                            <p:menuitem value="System" 
+                                        outcome="system"
+                                        rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.systemRole}"
+                                        >
+                            </p:menuitem>
+                            <p:menuitem value="CAT" 
+                                        oncomplete="PF('catDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Country" 
+                                        oncomplete="PF('countryDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Currency" 
+                                        oncomplete="PF('currencyDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Education degree" 
+                                        oncomplete="PF('educationDegreeDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Language"  
+                                        oncomplete="PF('languageDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Person type" 
+                                        oncomplete="PF('personTypeDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Project Type" 
+                                        oncomplete="PF('projectTypeDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Rating" 
+                                        oncomplete="PF('ratingDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Segmentation" 
+                                        oncomplete="PF('segmentationDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Service provided" 
+                                        oncomplete="PF('serviceProvidedDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Translation area" 
+                                        oncomplete="PF('translationAreaDialog').show();">
+                            </p:menuitem>
+                            <p:menuitem value="Payment method" 
+                                        oncomplete="PF('paymentMethodDialog').show();">
+                            </p:menuitem>
+                        </p:submenu>
+
+                        <p:menuitem value="Invoices" 
+                                    icon="ui-icon-document" 
+                                    outcome="invoices"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.managerRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <p:menuitem value="Not sent email" 
+                                    icon="ui-icon-document" 
+                                    outcome="notSentEmails"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.managerRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <p:menuitem value="Applicant" 
+                                    icon="ui-icon-document" 
+                                    outcome="applicant"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <p:menuitem value="Statistics" 
+                                    icon="ui-icon-document" 
+                                    outcome="statistics"
+                                    rendered="#{mainController.loggedUser.adminRole || mainController.loggedUser.systemRole}"
+                                    >
+                        </p:menuitem>
+
+                        <f:facet name="options">
+                            <p:splitButton value="#{mainController.loggedUser.name}">
+                                <p:menuitem value="Change password"  
+                                            icon="ui-icon-arrowrefresh-1-w" 
+                                            oncomplete="PF('passwordChange').show();"
+                                            />
+                                <p:separator />
+                                <p:menuitem value="Logout" 
+                                            action="#{loginController.logout}" 
+                                            icon="ui-icon-extlink" />
+                            </p:splitButton>
+                        </f:facet>
+                    </p:menubar>
+
+                    <ui:insert name="general_content" />
+
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:form>
+
+        <ui:include src="/dialogs/admin/catDialog.xhtml" />
+        <ui:include src="/dialogs/admin/countryDialog.xhtml" />
+        <ui:include src="/dialogs/admin/currencyDialog.xhtml" />
+        <ui:include src="/dialogs/admin/educationDegreeDialog.xhtml" />
+        <ui:include src="/dialogs/admin/industryDialog.xhtml" />
+        <ui:include src="/dialogs/admin/languageDialog.xhtml" />
+        <ui:include src="/dialogs/admin/paymentMethodDialog.xhtml" />
+        <ui:include src="/dialogs/admin/personTypeDialog.xhtml" />
+        <ui:include src="/dialogs/admin/projectTypeDialog.xhtml" />
+        <ui:include src="/dialogs/admin/ratingDialog.xhtml" />
+        <ui:include src="/dialogs/admin/segmentationDialog.xhtml" />
+        <ui:include src="/dialogs/admin/serviceProvidedDialog.xhtml" />
+        <ui:include src="/dialogs/admin/translationAreaDialog.xhtml" />
+        <ui:include src="/dialogs/admin/changePassword.xhtml" />
+
+    </h:body>
+
+</html>
+

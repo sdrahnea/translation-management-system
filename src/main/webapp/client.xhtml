@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel header="Client project"> 
+            <p:accordionPanel id="clientSearchFilters" activeIndex="-">
+                <p:tab title="Search fields">
+                    <p:panelGrid columns="6">
+                        <h:outputLabel value="Name" />
+                        <p:inputText  value="#{clientController.selectedClientName}"/>
+
+                        <h:outputLabel value="Country" />
+                        <p:selectOneMenu
+                            value="#{clientController.selectedCountry}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="countryConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{clientController.countries}" 
+                                           var="country" 
+                                           itemLabel="#{country.name}" 
+                                           itemValue="#{country}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Address" />
+                        <p:inputText  value="#{clientController.selectedClientAddress}"/>
+
+                        <h:outputLabel value="Contact person" />
+                        <p:inputText  value="#{clientController.selectedContactPersonName}"/>
+
+                        <h:outputLabel value="Contact email" />
+                        <p:inputText  value="#{clientController.selectedContactEmail}"/>
+
+                        <h:outputLabel value="Contact phone" />
+                        <p:inputText  value="#{clientController.selectedContactPhone}"/>
+
+                    </p:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+
+            <p:panelGrid columns="3">
+
+                <p:commandButton value="Filter" 
+                                 actionListener="#{clientController.filter}" 
+                                 process="@form"
+                                 update="clientSearchFilters,clientProjecttDataTableView"
+                                 icon="ui-icon-disk" />
+
+                <p:commandButton value="Clear filters"  
+                                 actionListener="#{clientController.clearFilters}" 
+                                 process="@form"
+                                 update="clientSearchFilters,clientProjecttDataTableView"
+                                 icon="ui-icon-disk" />
+
+
+                <p:commandButton value="New client" 
+                                 action="#{translatorController.workflowController('clientCrud', 'New')}"
+                                 />
+
+            </p:panelGrid>
+
+            <p:dataTable id="clientProjecttDataTableView" 
+                         var="client" 
+                         widgetVar="clientDataTable"
+                         value="#{clientController.clientList}"
+                         editable="true"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,25,50"
+                         sortMode="multiple"
+                         emptyMessage="No client found"
+                         >
+
+                <f:facet name="{Exporters}">
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/excel-icon.png" width="24"/>
+                        <p:dataExporter type="xls" target="clientProjecttDataTableView" fileName="clients" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/csv-icon.png" width="24"/>
+                        <p:dataExporter type="csv" target="clientProjecttDataTableView" fileName="clients" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/xml-icon.png" width="24"/>
+                        <p:dataExporter type="xml" target="clientProjecttDataTableView" fileName="clients" />
+                    </h:commandLink>
+                </f:facet>
+
+                <!--            <f:facet name="header">
+                                <p:outputPanel>
+                                    <h:outputText value="Search all fields:" />
+                                    <p:inputText id="globalFilterClient"
+                                                 onkeyup="PF('clientDataTable').filter()" 
+                                                 style="width:150px" 
+                                                 placeholder="Enter keyword"
+                                                 />
+                                </p:outputPanel>
+                            </f:facet>-->
+
+                <p:column sortBy="#{client.id}">
+                    <f:facet name="header">  
+                        <h:outputText value="Client ID" />  
+                    </f:facet>
+                    <p:commandLink value="#{client.id}" 
+                                   action="#{clientController.workflowController('clientView','View')}"
+                                   >
+                        <f:setPropertyActionListener target="#{clientController.client}" value="#{client}" />
+                    </p:commandLink>
+                </p:column>
+
+                <p:column sortBy="#{client.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Name" />  
+                    </f:facet>
+                    <h:outputText value="#{client.name}" />
+                </p:column>
+
+                <p:column sortBy="#{client.country.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Country" />  
+                    </f:facet>
+                    <h:outputText value="#{client.country.name}" />
+                </p:column>
+
+                <p:column sortBy="#{client.invoiceEmail}">
+                    <f:facet name="header">  
+                        <h:outputText value="Invoiced email" />  
+                    </f:facet>
+                    <h:outputText value="#{client.invoiceEmail}" />
+                </p:column>
+
+                <p:column sortBy="#{client.firstContactPerson.email}">
+                    <f:facet name="header">  
+                        <h:outputText value="Contact email" />  
+                    </f:facet>
+                    <h:outputText value="#{client.firstContactPerson.email}" />
+                </p:column>
+
+                <p:column sortBy="#{client.firstContactPerson.phone}">
+                    <f:facet name="header">  
+                        <h:outputText value="Contact phone" />  
+                    </f:facet>
+                    <h:outputText value="#{client.firstContactPerson.phone}" />
+                </p:column>
+
+                <p:column sortBy="#{client.firstContactPerson.skype}">
+                    <f:facet name="header">  
+                        <h:outputText value="Skype" />  
+                    </f:facet>
+                    <h:outputText value="#{client.firstContactPerson.skype}" />
+                </p:column>
+
+                <p:column sortBy="#{client.saleManager.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Sales manager" />  
+                    </f:facet>
+                    <h:outputText value="#{client.saleManager.name}" />
+                </p:column>
+
+                <p:column sortBy="#{client.insertDate}">
+                    <f:facet name="header">  
+                        <h:outputText value="Date collaboratin started" />  
+                    </f:facet>
+                    <h:outputText value="#{client.insertDate}" />
+                </p:column>
+
+            </p:dataTable>
+        </p:panel>
+    </ui:define>
+
+</ui:composition>

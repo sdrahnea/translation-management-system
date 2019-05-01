@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel header="#{clientController.crudFormCaption}" id="clientCrudPanel">
+            <p:panelGrid columns="2" >
+                <h:outputLabel value="Name" />
+                <p:inputText  value="#{clientController.client.name}"
+                              required="true"
+                              requiredMessage="Please, choose client name!"
+                              />
+
+                <h:outputLabel value="Country" />
+                <p:selectOneMenu 
+                    value="#{clientController.selectedCountry}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="countryConverter"
+                    required="true"
+                    requiredMessage="Please, choose country!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{clientController.countries}" 
+                                   var="country" 
+                                   itemLabel="#{country.name}" 
+                                   itemValue="#{country}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Address" />
+                <p:inputTextarea  value="#{clientController.client.address}"/>
+
+                <h:outputLabel for="name" value="Invoice email" />
+                <p:inputText  value="#{clientController.client.invoiceEmail}"
+                              required="true"
+                              requiredMessage="Please, choose invoice email!"
+                              validatorMessage="Invalid email format"
+                              >
+                    <f:validateRegex
+                        pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                </p:inputText>
+
+                <h:outputLabel for="name" value="Description" />
+                <p:inputTextarea  value="#{clientController.client.description}"/>
+
+                <h:outputLabel for="name" value="Website" />
+                <p:inputText  value="#{clientController.client.website}"/>
+
+                <h:outputLabel for="name" value="VAT" />
+                <p:inputText  value="#{clientController.client.vat}"/>
+
+                <h:outputLabel for="item" value="Segmentation" />
+                <p:selectOneMenu 
+                    value="#{clientController.selectedSegmentation}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="segmntationConverter"
+                    required="true"
+                    requiredMessage="Please, choose segmentation!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{clientController.segmentations}" 
+                                   var="segmentation" 
+                                   itemLabel="#{segmentation.name}" 
+                                   itemValue="#{segmentation}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="item" value="Sale manager" />
+                <p:selectOneMenu 
+                    value="#{clientController.selectedSaleManager}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="personConverter"
+                    required="true"
+                    requiredMessage="Please, choose sale manager!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{clientController.saleManagers}" 
+                                   var="saleManager" 
+                                   itemLabel="#{saleManager.name}" 
+                                   itemValue="#{saleManager}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Add new contact" />
+                <p:panelGrid columns="2" id="contactPersonGrid">
+                    <h:outputLabel value="Name" />
+                    <p:inputText  value="#{clientController.contactPerson.name}"
+                                  />
+
+                    <h:outputLabel value="Contact email" />
+                    <p:inputText  value="#{clientController.contactPerson.email}"
+                                  >
+                    </p:inputText>
+
+                    <h:outputLabel value="Phone" />
+                    <p:inputText  value="#{clientController.contactPerson.phone}"/>
+
+                    <h:outputLabel value="Skype" />
+                    <p:inputText  value="#{clientController.contactPerson.skype}"/>
+
+                    <p:commandButton value="Add" 
+                                     actionListener="#{clientController.addClientContactPerson}" 
+                                     update="contactpersonDatatable,contactPersonGrid"
+                                     icon="ui-icon-disk" 
+                                     />
+                    <p:commandButton value="Clear all contacts" 
+                                     actionListener="#{clientController.clearClientContactPerson}" 
+                                     update="contactpersonDatatable,contactPersonGrid"
+                                     icon="ui-icon-disk" 
+                                     />
+                </p:panelGrid>
+
+                <h:outputLabel value="Contact persons list" />
+                <p:dataTable id="contactpersonDatatable" 
+                             var="contactPerson" 
+                             value="#{clientController.contactPersons}"
+                             editable="true"
+                             >
+                    <p:ajax event="rowEditCancel" listener="#{clientController.onContactPersonCancel}" update=":form:growl" /> 
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Name" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.name}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.name}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Contact email" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.email}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.email}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Phone" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.phone}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.phone}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Skype" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{contactPerson.skype}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{contactPerson.skype}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Options" >  
+                        <p:rowEditor />  
+                    </p:column> 
+
+                </p:dataTable>
+
+                <p:commandButton value="Save" 
+                                 update="clientCrudPanel, form:growl"
+                                 actionListener="#{clientController.saveClient}" 
+                                 action="#{clientController.workflowController('client')}" 
+                                 icon="ui-icon-disk" >
+                </p:commandButton>
+                <p:commandButton value="Cancel" 
+                                 actionListener="#{clientController.cancelClient}" 
+                                 action="#{clientController.workflowController('client')}" 
+                                 immediate="true"
+                                 />
+            </p:panelGrid>
+        </p:panel>
+    </ui:define>
+
+</ui:composition>

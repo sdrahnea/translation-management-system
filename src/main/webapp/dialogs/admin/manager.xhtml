@@ -1,0 +1,95 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Manager editing" 
+              widgetVar="managerDialog" 
+              minHeight="40" 
+              height="400"
+              width="500"
+              appendTo="@(body)" 
+              modal="true"
+              >
+        <h:form>
+            <h:panelGrid id="inputdata" columns="2" cellpadding="10">
+                <h:outputLabel value="Name" />
+                <p:inputText  value="#{managerController.person.name}"/>
+
+                <h:outputLabel value="Invoice email" />
+                <p:inputText  value="#{managerController.person.email}"/>
+
+                <h:outputLabel value="Phone" />
+                <p:inputText  value="#{managerController.person.phone}"/>
+
+                <h:outputLabel value="Skype" />
+                <p:inputText  value="#{managerController.person.skype}"/>
+                
+                <h:outputLabel value="User login" />
+                <p:inputText  value="#{managerController.user.login}"/>
+                
+                <h:outputLabel value="User password" />
+                <p:inputText  value="#{managerController.user.password}"/>                
+
+                <p:commandButton value="Save" 
+                                 action="#{managerController.save}" 
+                                 process="@all"
+                                 update="@all"
+                                 icon="ui-icon-disk" />
+            </h:panelGrid>
+            
+            <h:panelGrid columns="2" cellpadding="10">
+                <p:dataTable id="managerDatatable"
+                             var="entity" 
+                             value="#{managerController.entityList}" 
+                             editable="true" 
+                             scrollable="true"
+                             style="margin-bottom:20px"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,25,50"
+                             rows="10"
+                             emptyMessage="No data found"
+                             >
+                    <p:ajax event="rowEdit" listener="#{managerController.onRowEdit}" update=":form:growl" />
+                    <p:ajax event="rowEditCancel" listener="#{managerController.onRowCancel}" update=":form:growl" />
+
+                    <p:column headerText="Name">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{entity.name}" style="align-content: center"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{entity.name}" label="Name"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    
+                    <p:column headerText="Email">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{entity.email}" style="align-content: center"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{entity.email}" label="Email"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    
+                    <p:column headerText="Phone">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{entity.phone}" style="align-content: center"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{entity.phone}" label="Phone"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    
+                    <p:column headerText="Skype">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{entity.skype}" style="align-content: center"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{entity.skype}" label="Skype"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column style="width:32px">
+                        <p:rowEditor />
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

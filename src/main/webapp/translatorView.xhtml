@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+        <p:panel id="translatorCrud" header="#{translatorController.crudFormCaption} "> 
+            <p:panelGrid columns="2">
+                <h:outputLabel value="Name" />
+                <h:outputText value="#{translatorController.translator.name}"/>
+
+                <h:outputLabel value="Email" />
+                <h:outputText value="#{translatorController.translator.email}"/>
+
+                <h:outputLabel value="Contact phone" />
+                <h:outputText value="#{translatorController.translator.contactPhone}"/>
+
+                <h:outputLabel value="Alternative contact" />
+                <h:outputText value="#{translatorController.translator.alternativeContact}"/>
+
+                <h:outputLabel value="Country" />
+                <h:outputText value="#{translatorController.translator.country.name}"/>
+
+                <h:outputLabel value="Education degree" />
+                <h:outputText value="#{translatorController.translator.educationDegree.name}"/>
+
+                <h:outputLabel value="Years of experience" />
+                <h:outputText value="#{translatorController.translator.yearsOfExperience}"/>
+
+                <h:outputLabel value="Input language 1" />
+                <h:outputText value="#{translatorController.translator.inputLanguage1.name}"/>
+                
+                <h:outputLabel value="Input language 2" />
+                <h:outputText value="#{translatorController.translator.inputLanguage2.name}"/>
+
+                <h:outputLabel value="Input language 3" />
+                <h:outputText value="#{translatorController.translator.inputLanguage3.name}"/>
+
+                <h:outputLabel value="Output language (Native)" />
+                <h:outputText value="#{translatorController.translator.outputLanguage.name}"/>
+
+                <h:outputLabel value="CAT" />
+                <h:outputText value="#{translatorController.translator.translatorToCats}"/>
+                
+                <h:outputLabel value="Translation rate" />
+                <h:outputText value="#{translatorController.translator.translatorRate}"/>
+
+                <h:outputLabel value="Translate rate currency" />
+                <h:outputText value="#{translatorController.translator.translatorRateCurrency.name}"/>
+
+                <h:outputLabel value="Proofreading rate" />
+                <h:outputText value="#{translatorController.translator.proofReadingRate}"/>
+
+                <h:outputLabel value="Prof reading currency" />
+                <h:outputText value="#{translatorController.translator.proofReadingRateCurrency.name}"/>
+
+                <h:outputLabel value="Minimum rate" />
+                <h:outputText value="#{translatorController.translator.minimumRate}"/>
+
+                <h:outputLabel value="Minimum rate currency" />
+                <h:outputText value="#{translatorController.translator.minimumRateCurrency.name}"/>
+
+                <h:outputLabel value="Payment method" />
+                <p:dataTable id="paymentMethodDataTable" 
+                             var="tpaymenyMethod" 
+                             value="#{translatorController.translatorToPaymentMethodList}"
+                             editable="true"
+                             >
+                    <p:ajax event="rowEditCancel" listener="#{translatorController.onPaymentMethodCancel}" update=":form:growl" /> 
+                    <p:ajax event="rowEditCancel" listener="#{translatorController.onPaymentMethodEdit}" update=":form:growl" /> 
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Name" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{tpaymenyMethod.paymentMethod.name}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{tpaymenyMethod.paymentMethod.name}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">  
+                            <h:outputText value="Description" />  
+                        </f:facet>
+                        <p:cellEditor>  
+                            <f:facet name="output">  
+                                <h:outputText value="#{tpaymenyMethod.description}" />  
+                            </f:facet>  
+                            <f:facet name="input">  
+                                <p:inputText value="#{tpaymenyMethod.description}" />  
+                            </f:facet>  
+                        </p:cellEditor>
+                    </p:column>
+
+                </p:dataTable>
+
+                <h:outputLabel value="Service provided" />
+                <h:outputText value="#{translatorController.translator.translatorToServcieProvideds}"/>
+
+                <h:outputLabel value="Daily words Output" />
+                <h:outputText value="#{translatorController.translator.dailyWordsOutput}"/>
+
+                <h:outputLabel value="References" />
+                <h:outputText value="#{translatorController.translator.references}"/>
+
+                <h:outputLabel value="Link to Proz" />
+                <h:outputText value="#{translatorController.translator.linkToProz}"/>
+
+                <h:outputLabel value="Translation area" />
+                <h:outputText value="#{translatorController.translator.translatorToTranslationAreas}"/>
+
+                <h:outputLabel value="General agreement conditions/NDA" />
+                <h:outputText value="#{translatorController.wrappTranslatorAgreementSign(translatorController.translator)}"/>
+
+                <h:outputLabel value="CV file" />                   
+                <p:outputPanel id="tdownloadlink">
+                    <p:commandLink  value="#{translatorController.translator.fileName}" 
+                                    ajax="false"
+                                    actionListener="#{translatorController.prepDownload}"
+                                    >
+                        <p:fileDownload value="#{translatorController.download}" />
+                    </p:commandLink>
+                </p:outputPanel>              
+
+                <h:outputText value="Rating" />
+                <p:rating value="#{translatorController.translator.lastRatingAsNumber}" readonly="true" stars="10"/>
+
+                <h:outputLabel value="Rating comment" />
+                <h:outputText  value="#{translatorController.translator.lastComment}"/>
+                
+                <p:commandButton value="Edit" 
+                                 action="#{translatorController.workflowController('translatorCrud','Edit')}"
+                                 icon="ui-icon-disk" />
+                <p:commandButton value="Cancel" 
+                                 actionListener="#{translatorController.cancel}"
+                                 action="#{translatorController.workflowController('translator')}" 
+                                 immediate="true"
+                                 icon="ui-icon-disk" />
+            </p:panelGrid>
+        </p:panel>
+        
+        <p:accordionPanel activeIndex="-">
+            <p:tab title="Past projects">
+                <p:dataTable id="projectDataTableViewTranslator" 
+                             var="project" 
+                             widgetVar="projectTranslatorDataTable"
+                             value="#{translatorController.pastProjects}"
+                             editable="true"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                             rowsPerPageTemplate="5,10,25,50"
+                             sortMode="multiple"
+                             emptyMessage="No project found"
+                             >
+                    <f:facet name="{Exporters}">
+                        <h:commandLink>
+                            <h:graphicImage value="/images/icon/excel-icon.png" width="24"/>
+                            <p:dataExporter type="xls" target="projectDataTableView" fileName="projects" />
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:graphicImage value="/images/icon/csv-icon.png" width="24"/>
+                            <p:dataExporter type="csv" target="projectDataTableView" fileName="projects" />
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:graphicImage value="/images/icon/xml-icon.png" width="24"/>
+                            <p:dataExporter type="xml" target="projectDataTableView" fileName="projects" />
+                        </h:commandLink>
+                    </f:facet>
+
+                    <p:column sortBy="#{project.id}">
+                        <f:facet name="header">  
+                            <h:outputText value="Project ID" />  
+                        </f:facet>
+                        <p:commandLink value="#{project.id}" 
+                                       action="#{projectController.workflowController('projectView','View')}"
+                                       >
+                            <f:setPropertyActionListener target="#{projectController.project}" value="#{project}" />
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column sortBy="#{project.status.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Project status" />  
+                        </f:facet>
+                        <h:outputText value="#{project.status.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Name" />  
+                        </f:facet>
+                        <h:outputText value="#{project.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.client.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Client" />  
+                        </f:facet>
+                        <h:outputText value="#{project.client.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.contactPerson.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Contact person" />  
+                        </f:facet>
+                        <h:outputText value="#{project.contactPerson.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.insertDate}">
+                        <f:facet name="header">  
+                            <h:outputText value="Received date" />  
+                        </f:facet>
+                        <h:outputText value="#{project.insertDate}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.deadlineDate}">
+                        <f:facet name="header">  
+                            <h:outputText value="Deanline date" />  
+                        </f:facet>
+                        <h:outputText value="#{project.deadlineDate}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.translationArea.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Industry" />  
+                        </f:facet>
+                        <h:outputText value="#{project.translationArea.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.cat.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="CAT" />  
+                        </f:facet>
+                        <h:outputText value="#{project.cat.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.assignedManager.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Assigned" />  
+                        </f:facet>
+                        <h:outputText value="#{project.assignedManager.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.secondManager.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Assigned 2" />  
+                        </f:facet>
+                        <h:outputText value="#{project.secondManager.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.clientPaymentDate}">
+                        <f:facet name="header">  
+                            <h:outputText value="Client payment date" />  
+                        </f:facet>
+                        <h:outputText value="#{project.clientPaymentDate}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.translatorPaymentDate}">
+                        <f:facet name="header">  
+                            <h:outputText value="Translator payment date" />  
+                        </f:facet>
+                        <h:outputText value="#{project.translatorPaymentDate}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.sourceLanguage.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Source language" />  
+                        </f:facet>
+                        <h:outputText value="#{project.sourceLanguage.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.destinatonLanguage.name}">
+                        <f:facet name="header">  
+                            <h:outputText value="Destination language" />  
+                        </f:facet>
+                        <h:outputText value="#{project.destinatonLanguage.name}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.units}">
+                        <f:facet name="header">  
+                            <h:outputText value="Units" />  
+                        </f:facet>
+                        <h:outputText value="#{project.units}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.pricePerUnit}">
+                        <f:facet name="header">  
+                            <h:outputText value="Price per unit" />  
+                        </f:facet>
+                        <h:outputText value="#{project.pricePerUnit}" />
+                    </p:column>
+
+                    <p:column sortBy="#{project.totalPrice}">
+                        <f:facet name="header">  
+                            <h:outputText value="Total price" />  
+                        </f:facet>
+                        <h:outputText value="#{project.totalPrice}" />
+                    </p:column>
+
+                </p:dataTable>
+            </p:tab>
+        </p:accordionPanel>
+        
+    </ui:define>
+</ui:composition>

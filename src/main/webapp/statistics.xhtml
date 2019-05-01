@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+        <p:panel>
+
+            <p:accordionPanel id="statisticsSearchFilters" activeIndex="-">
+                <p:tab title="Search fields">
+                    <p:panelGrid columns="6" id="statisticsSearchFilters">
+                        <h:outputLabel value="Start date" />
+                        <p:calendar  value="#{statisticsController.filterStartDate}"/>
+
+                        <h:outputLabel value="End date" />
+                        <p:calendar value="#{statisticsController.filterEndDate}"/>
+
+                        <h:outputLabel value="Manager" />
+                        <p:selectOneMenu
+                            value="#{statisticsController.filterManager}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="personConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{statisticsController.managerList}" 
+                                           var="manager" 
+                                           itemLabel="#{manager.name}" 
+                                           itemValue="#{manager}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Client" />
+                        <p:selectOneMenu
+                            value="#{statisticsController.filterClient}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="clientConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{statisticsController.clientList}" 
+                                           var="client" 
+                                           itemLabel="#{client.name}" 
+                                           itemValue="#{client}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Translator" />
+                        <p:selectOneMenu
+                            value="#{statisticsController.filterTranslator}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="translatorConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{statisticsController.translatorList}" 
+                                           var="translator" 
+                                           itemLabel="#{translator.name}" 
+                                           itemValue="#{translator}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Currency" />
+                        <p:selectOneMenu
+                            value="#{statisticsController.filterCurrency}"
+                            filter="true" 
+                            filterMatchMode="contains"
+                            converter="currencyConverter"
+                            >
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{statisticsController.currencyList}" 
+                                           var="currency" 
+                                           itemLabel="#{currency.name}" 
+                                           itemValue="#{currency}" />
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+
+            <p:panelGrid columns="2">
+
+                <p:commandButton value="Filter" 
+                                 actionListener="#{statisticsController.filter}" 
+                                 process="@form"
+                                 update="statisticsSearchFilters,statisticsDataTableView,paymentPanel"
+                                 icon="ui-icon-disk" />
+
+                <p:commandButton value="Clear filters"  
+                                 actionListener="#{statisticsController.clearFilters}" 
+                                 process="@form"
+                                 update="statisticsSearchFilters,statisticsDataTableView,paymentPanel"
+                                 icon="ui-icon-disk" />
+
+            </p:panelGrid>
+
+            <p:accordionPanel id="paymentPanel" activeIndex="-">
+                <p:tab title="Payment fields">
+                    <p:outputPanel >
+                        <h:outputText value="Incomes" />  
+                        <p:dataTable value="#{statisticsController.incomes}"
+                                     var="pay"
+                                     >
+                            <p:column>
+                                <h:outputText value="#{pay.name}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{pay.amount}" />
+                            </p:column>
+                        </p:dataTable>
+
+                        <h:outputText value="Pays from client" />  
+                        <p:dataTable value="#{statisticsController.clientPaids}"
+                                     var="pay"
+                                     >      
+                            <p:column>
+                                <h:outputText value="#{pay.name}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{pay.amount}" />
+                            </p:column>
+                        </p:dataTable>
+
+                        <h:outputText value="Pays to translators" />  
+                        <p:dataTable value="#{statisticsController.paidToTranslators}"
+                                     var="pay"
+                                     >      
+                            <p:column>
+                                <h:outputText value="#{pay.name}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{pay.amount}" />
+                            </p:column>
+                        </p:dataTable>
+
+                        <h:outputText value="Loss" />  
+                        <p:dataTable value="#{statisticsController.losss}"
+                                     var="pay"
+                                     >      
+                            <p:column>
+                                <h:outputText value="#{pay.name}" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{pay.amount}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:tab>
+            </p:accordionPanel>
+
+            <p:dataTable id="statisticsDataTableView" 
+                         var="statistics" 
+                         widgetVar="statisticsDataTable"
+                         value="#{statisticsController.entityList}"
+                         editable="true"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,25,50"
+                         sortMode="multiple"
+                         emptyMessage="No record found"
+                         >
+                <f:facet name="{Exporters}">
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/excel-icon.png" width="24"/>
+                        <p:dataExporter type="xls" target="statisticsDataTableView" fileName="statisticss" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/csv-icon.png" width="24"/>
+                        <p:dataExporter type="csv" target="statisticsDataTableView" fileName="statisticss" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/xml-icon.png" width="24"/>
+                        <p:dataExporter type="xml" target="statisticsDataTableView" fileName="statisticss" />
+                    </h:commandLink>
+                </f:facet>
+
+                <p:ajax event="rowEdit" listener="#{statisticsController.onRowEdit}" update=":form:growl" />
+                <p:ajax event="rowEditCancel" listener="#{statisticsController.onRowCancel}" update=":form:growl" />
+
+
+                <p:column sortBy="#{statistics.id}">
+                    <f:facet name="header">  
+                        <h:outputText value="Project ID" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.id}" />
+                </p:column>
+
+                <p:column sortBy="#{statistics.status.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Project status" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.status.name}" />
+                </p:column>
+
+                <p:column sortBy="#{statistics.client.name}">
+                    <f:facet name="header">  
+                        <h:outputText value="Client" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.client.name}" />
+                </p:column>
+
+                <p:column sortBy="#{statistics.totalPrice}">
+                    <f:facet name="header">  
+                        <h:outputText value="Total price" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.totalPrice}" />
+                </p:column>
+
+                <p:column sortBy="#{statistics.currency.name}" >
+                    <f:facet name="header">  
+                        <h:outputText value="Currency" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.currency.name}" />
+                </p:column>
+
+                <p:column sortBy="#{statistics.clientPaymentDate}" >
+                    <f:facet name="header">  
+                        <h:outputText value="Client Payment Date" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.clientPaymentDate}" />
+                </p:column>
+
+                <p:column headerText="Loss">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{statistics.loss}" style="align-content: center"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{statistics.loss}" label="Loss"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Translator Payment">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{statistics.translatorPayment}" style="align-content: center"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{statistics.translatorPayment}" label="Translator Payment"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column sortBy="#{statistics.totalPrice - statistics.loss - statistics.translatorPayment}" >
+                    <f:facet name="header">  
+                        <h:outputText value="Income" />  
+                    </f:facet>
+                    <h:outputText value="#{statistics.totalPrice - statistics.loss - statistics.translatorPayment}" />
+                </p:column>      
+
+                <p:column style="width:32px">
+                    <p:rowEditor />
+                </p:column>
+
+            </p:dataTable>
+
+        </p:panel>
+
+    </ui:define>
+
+</ui:composition>

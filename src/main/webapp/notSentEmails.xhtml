@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel>
+            <p:dataTable id="notSentEmailDataTableView" 
+                         var="notSentEmail" 
+                         widgetVar="notSentEmailDataTable"
+                         value="#{notSentEmailController.entityList}"
+                         editable="true"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                         rowsPerPageTemplate="5,10,25,50"
+                         sortMode="multiple"
+                         emptyMessage="No record found"
+                         >
+                <f:facet name="{Exporters}">
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/excel-icon.png" width="24"/>
+                        <p:dataExporter type="xls" target="notSentEmailDataTableView" fileName="notSentEmails" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/csv-icon.png" width="24"/>
+                        <p:dataExporter type="csv" target="notSentEmailDataTableView" fileName="notSentEmails" />
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:graphicImage value="/images/icon/xml-icon.png" width="24"/>
+                        <p:dataExporter type="xml" target="notSentEmailDataTableView" fileName="notSentEmails" />
+                    </h:commandLink>
+                </f:facet>
+
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all fields:" />
+                        <p:inputText id="globalFilterProject"
+                                     onkeyup="PF('notSentEmailDataTable').filter()" 
+                                     style="width:150px" 
+                                     placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet> 
+
+                <p:column sortBy="#{notSentEmail.id}"
+                          filterBy="#{notSentEmail.id}" 
+                          footerText="contains" 
+                          filterMatchMode="contains">
+                    <f:facet name="header">  
+                        <h:outputText value="Id" />  
+                    </f:facet>
+                    <h:outputText value="#{notSentEmail.id}" />
+                </p:column>
+
+                <p:column sortBy="#{notSentEmail.email}"
+                          filterBy="#{notSentEmail.email}" 
+                          footerText="contains" 
+                          filterMatchMode="contains">
+                    <f:facet name="header">  
+                        <h:outputText value="Email" />  
+                    </f:facet>
+                    <h:outputText value="#{notSentEmail.email}" />
+                </p:column>
+
+                <p:column sortBy="#{notSentEmail.subject}"
+                          filterBy="#{notSentEmail.subject}" 
+                          footerText="contains" 
+                          filterMatchMode="contains">
+                    <f:facet name="header">  
+                        <h:outputText value="Subject" />  
+                    </f:facet>
+                    <h:outputText value="#{notSentEmail.subject}" />
+                </p:column>
+
+                <p:column sortBy="#{notSentEmail.reason}"
+                          filterBy="#{notSentEmail.reason}" 
+                          footerText="contains" 
+                          filterMatchMode="contains">
+                    <f:facet name="header">  
+                        <h:outputText value="Reason" />  
+                    </f:facet>
+                    <h:outputText value="#{notSentEmail.reason}" />
+                </p:column>
+
+                <p:column sortBy="#{notSentEmail.insertDate}" 
+                          filterBy="#{notSentEmail.insertDate}" 
+                          footerText="contains" 
+                          filterMatchMode="contains">
+                    <f:facet name="header">  
+                        <h:outputText value="Insert date" />  
+                    </f:facet>
+                    <h:outputText value="#{notSentEmail.insertDate}" />
+                </p:column>
+
+            </p:dataTable>
+
+        </p:panel>
+    </ui:define>
+</ui:composition>

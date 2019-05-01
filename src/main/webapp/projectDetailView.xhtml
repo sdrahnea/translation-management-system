@@ -1,0 +1,614 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+        <p:panel header="#{projectDetailController.crudFormCaption} "> 
+            <p:panelGrid columns="2" >
+
+                <h:outputLabel value="Type" />
+                <h:outputText value="#{projectDetailController.projectDetail.projectType.name}"/>
+
+                <h:outputLabel value="Units" />
+                <h:outputText value="#{projectDetailController.projectDetail.units}"/>
+
+                <h:outputLabel value="Translator price / unit" />
+                <h:outputText value="#{projectDetailController.projectDetail.pricePerUnit}"/>
+
+                <h:outputLabel value="Translator price total, #{projectDetailController.projectDetail.currency.name}" />
+                <h:outputText  value="#{projectDetailController.projectDetail.totalPrice}"/>
+
+                <h:outputLabel value="Translator deadline" />
+                <p:calendar  value="#{projectDetailController.projectDetail.deadlineDate}"
+                             disabled="true"
+                             />
+
+                <h:outputLabel value="Translator deadline hour" />
+                <p:calendar value="#{projectDetailController.projectDetail.deadlineHour}"
+                            pattern="HH:mm" 
+                            timeOnly="true"
+                            disabled="true"
+                            />
+
+                <h:outputLabel value="Payment delay" />
+                <h:outputText  value="#{projectDetailController.projectDetail.paymentDelay}"/>
+
+                <h:outputLabel value="Notes" />
+                <h:outputText  value="#{projectDetailController.projectDetail.notes}"/>
+
+                <h:outputLabel value="Source language" />
+                <h:outputText  value="#{projectDetailController.projectDetail.sourceLanguage.name}"/>
+
+                <h:outputLabel value="Destination language" />
+                <h:outputText  value="#{projectDetailController.projectDetail.destinatonLanguage.name}"/>
+
+                <h:outputLabel value="Imported file" />                   
+                <p:outputPanel id="downloadlink">
+                    <p:commandLink  value="#{projectDetailController.projectDetail.fileName}" 
+                                    ajax="false"
+                                    actionListener="#{projectDetailController.prepDownload}"
+                                    >
+                        <p:fileDownload value="#{projectDetailController.download}" />
+                    </p:commandLink>
+                </p:outputPanel>
+
+                <h:outputLabel value="Translators deals" />   
+                <p:tabView>
+                    <p:tab title="Inform translators">
+                        <p:dataTable var="translator" 
+                                     widgetVar="allTranslatorsDataTableW"
+                                     value="#{projectDetailController.allTranslators}"
+                                     editable="true"
+                                     rows="10"
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     sortMode="multiple"
+                                     emptyMessage="No translator found"
+                                     selection="#{projectDetailController.selectInformedTranslators}"
+                                     rowKey="#{translator.id}"
+                                     >
+
+                            <p:ajax event="rowSelectCheckbox" update="@this" process="@this"  />  
+
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Translator ID" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.id}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.name}" filterBy="#{translator.name}" footerText="contains" filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Name" />  
+                                </f:facet>
+                                <p:cellEditor>  
+                                    <f:facet name="output">  
+                                        <h:outputText value="#{translator.name}" />  
+                                    </f:facet>  
+                                    <f:facet name="input">  
+                                        <p:inputText value="#{translator.name}" />  
+                                    </f:facet>  
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column sortBy="#{translator.country.name}" 
+                                      filterBy="#{translator.country.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Country" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.country.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Contact phone" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.contactPhone}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.inputLanguage1.name}" 
+                                      filterBy="#{translator.inputLanguage1.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 1" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.inputLanguage1.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.inputLanguage2.name}" 
+                                      filterBy="#{translator.inputLanguage2.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 2" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.inputLanguage2.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.inputLanguage3.name}" 
+                                      filterBy="#{translator.inputLanguage3.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 3" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.inputLanguage3.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.outputLanguage.name}" 
+                                      filterBy="#{translator.outputLanguage.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Output language" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.outputLanguage.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Translation rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.translatorRate}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Proof reading rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.proofReadingRate}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.serviceProvided.name}" 
+                                      filterBy="#{translator.serviceProvided.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Service provided" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.serviceProvided.name}" />
+                            </p:column>
+
+
+                            <p:column sortBy="#{translator.translationArea.name}" 
+                                      filterBy="#{translator.translationArea.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Translation area" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.translationArea.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.lastRating.name}" 
+                                      filterBy="#{translator.lastRating.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Rating" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.lastRating.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Minimum rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.minimumRate}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Last comment rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.lastComment}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Link to Proz" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.linkToProz}" />
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:commandButton value="Inform"  
+                                         update="@all"
+                                         action="#{projectDetailController.informTranslators}" 
+                                         icon="ui-icon-disk" />
+                    </p:tab>
+                    <p:tab title="Translators informed">
+                        <p:dataTable var="pdts" 
+                                     widgetVar="pdtsDataTableW"
+                                     value="#{projectDetailController.pdtsList}"
+                                     editable="true"
+                                     rows="10"
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     sortMode="multiple"
+                                     emptyMessage="No translator found"
+                                     selection="#{projectDetailController.selectReadyToWorkTranslators}"
+                                     rowKey="#{pdts.translator.id}"
+                                     >
+
+                            <p:ajax event="rowSelectCheckbox" update="@this" process="@this"  />  
+
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Translator ID" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.id}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.name}" filterBy="#{pdts.translator.name}" footerText="contains" filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Name" />  
+                                </f:facet>
+                                <p:cellEditor>  
+                                    <f:facet name="output">  
+                                        <h:outputText value="#{pdts.translator.name}" />  
+                                    </f:facet>  
+                                    <f:facet name="input">  
+                                        <p:inputText value="#{pdts.translator.name}" />  
+                                    </f:facet>  
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.country.name}" 
+                                      filterBy="#{pdts.translator.country.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Country" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.country.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.status.name}" 
+                                      filterBy="#{pdts.status.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Status" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.status.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Contact phone" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.contactPhone}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.inputLanguage1.name}" 
+                                      filterBy="#{pdts.translator.inputLanguage1.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 1" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.inputLanguage1.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.inputLanguage2.name}" 
+                                      filterBy="#{pdts.translator.inputLanguage2.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 2" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.inputLanguage2.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.inputLanguage3.name}" 
+                                      filterBy="#{pdts.translator.inputLanguage3.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 3" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.inputLanguage3.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.outputLanguage.name}" 
+                                      filterBy="#{pdts.translator.outputLanguage.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Output language" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.outputLanguage.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Translation rate" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.translatorRate}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Proof reading rate" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.proofReadingRate}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.serviceProvided.name}" 
+                                      filterBy="#{pdts.translator.serviceProvided.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Service provided" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.serviceProvided.name}" />
+                            </p:column>
+
+
+                            <p:column sortBy="#{pdts.translator.translationArea.name}" 
+                                      filterBy="#{pdts.translator.translationArea.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Translation area" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.translationArea.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{pdts.translator.lastRating.name}" 
+                                      filterBy="#{pdts.translator.lastRating.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Rating" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.lastRating.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Minimum rate" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.minimumRate}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Last comment rate" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.lastComment}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Link to Proz" />  
+                                </f:facet>
+                                <h:outputText value="#{pdts.translator.linkToProz}" />
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:commandButton value="Assign"  
+                                         update="@all"
+                                         actionListener="#{projectDetailController.assignTranslatorAction}" 
+                                         icon="ui-icon-disk" />
+                        
+                    </p:tab>
+                    <p:tab title="Assigned">
+                        <p:dataTable var="translator" 
+                                     widgetVar="allAssignedTranslatorsDataTableW"
+                                     value="#{projectDetailController.assignedTranslators}"
+                                     editable="true"
+                                     rows="10"
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                     rowsPerPageTemplate="5,10,25,50"
+                                     sortMode="multiple"
+                                     emptyMessage="No translator found"
+                                     selection="#{projectDetailController.selectAssignedTranslators}"
+                                     rowKey="#{translator.id}"
+                                     >
+
+                            <p:ajax event="rowSelectCheckbox" update="@this" process="@this"  />  
+
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Translator ID" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.id}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.name}" filterBy="#{translator.name}" footerText="contains" filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Name" />  
+                                </f:facet>
+                                <p:cellEditor>  
+                                    <f:facet name="output">  
+                                        <h:outputText value="#{translator.name}" />  
+                                    </f:facet>  
+                                    <f:facet name="input">  
+                                        <p:inputText value="#{translator.name}" />  
+                                    </f:facet>  
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column sortBy="#{translator.country.name}" 
+                                      filterBy="#{translator.country.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Country" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.country.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Contact phone" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.contactPhone}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.inputLanguage1.name}" 
+                                      filterBy="#{translator.inputLanguage1.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 1" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.inputLanguage1.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.inputLanguage2.name}" 
+                                      filterBy="#{translator.inputLanguage2.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 2" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.inputLanguage2.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.inputLanguage3.name}" 
+                                      filterBy="#{translator.inputLanguage3.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Input language 3" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.inputLanguage3.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.outputLanguage.name}" 
+                                      filterBy="#{translator.outputLanguage.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Output language" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.outputLanguage.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Translation rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.translatorRate}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Proof reading rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.proofReadingRate}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.serviceProvided.name}" 
+                                      filterBy="#{translator.serviceProvided.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Service provided" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.serviceProvided.name}" />
+                            </p:column>
+
+
+                            <p:column sortBy="#{translator.translationArea.name}" 
+                                      filterBy="#{translator.translationArea.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Translation area" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.translationArea.name}" />
+                            </p:column>
+
+                            <p:column sortBy="#{translator.lastRating.name}" 
+                                      filterBy="#{translator.lastRating.name}" 
+                                      footerText="contains" 
+                                      filterMatchMode="contains">
+                                <f:facet name="header">  
+                                    <h:outputText value="Rating" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.lastRating.name}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Minimum rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.minimumRate}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Last comment rate" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.lastComment}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Link to Proz" />  
+                                </f:facet>
+                                <h:outputText value="#{translator.linkToProz}" />
+                            </p:column>
+                        </p:dataTable>
+
+                    </p:tab>
+                </p:tabView>
+            </p:panelGrid>
+
+            <p:splitButton value="Edit" 
+                           action="#{projectDetailController.workflowController('projectDetailCrud','Edit')}"
+                           icon="ui-icon-disk">
+                <p:separator />
+                
+<!--                <p:menuitem value="Mark as paid from client" 
+                            action="#{projectController.workflowController('projectView')}" 
+                            actionListener="#{projectDetailController.markAsClientPaid}"
+                            icon="ui-icon-star"/>
+                <p:menuitem value="Mark as paid to translator" 
+                            action="#{projectController.workflowController('projectView')}" 
+                            actionListener="#{projectDetailController.markAsTranslatorPaid}"
+                            icon="ui-icon-person"/>-->
+                <p:menuitem value="Mark as delivered" 
+                            action="#{projectDetailController.workflowController('projectView')}" 
+                            actionListener="#{projectDetailController.markAsDelivered}"
+                            />
+                <p:menuitem value="Mark as invoiced" 
+                            action="#{projectDetailController.workflowController('projectView')}" 
+                            actionListener="#{projectDetailController.markAsInvoiced}"
+                            />
+                <p:menuitem value="Mark as paid" 
+                            action="#{projectController.workflowController('projectView')}" 
+                            actionListener="#{projectDetailController.markAsPaid}"
+                            icon="ui-icon-suitcase" />
+                <p:separator />
+                <p:menuitem value="Cancel" 
+                            action="#{projectController.workflowController('projectView')}"
+                            immediate="true"
+                            icon="ui-icon-close"/>
+            </p:splitButton>
+
+
+        </p:panel>
+    </ui:define>
+</ui:composition>

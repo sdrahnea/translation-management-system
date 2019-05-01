@@ -1,0 +1,60 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Service provided editing" 
+              widgetVar="serviceProvidedDialog" 
+              minHeight="40" 
+              height="400"
+              width="500"
+              appendTo="@(body)" 
+              modal="true"
+              >
+        <h:form>
+            <p:accordionPanel id="translatorSearchFilters" activeIndex="-">
+                <p:tab title="Add new record">
+                    <h:panelGrid columns="2" cellpadding="1">
+                        <h:outputLabel value="Name" />
+                        <p:inputText  value="#{serviceProvidedController.name}"/>
+                        <p:commandButton value="Add" 
+                                         action="#{serviceProvidedController.addNewEntity}" 
+                                         process="@form"
+                                         update="@form"
+                                         icon="ui-icon-disk" />
+                    </h:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+            
+            <h:panelGrid columns="2" cellpadding="10">
+                <p:dataTable var="entity" value="#{serviceProvidedController.entityList}" 
+                             scrollable="true"
+                             editable="true"
+                             style="margin-bottom:20px"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,25,50"
+                             rows="10"
+                             emptyMessage="No data found"
+                             >
+                    <p:ajax event="rowEdit" listener="#{serviceProvidedController.onRowEdit}" update=":form:growl" />
+                    <p:ajax event="rowEditCancel" listener="#{serviceProvidedController.onRowCancel}" update=":form:growl" />
+
+                    <p:column headerText="Name">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{entity.name}" /></f:facet>
+                            <f:facet name="input"><p:inputText value="#{entity.name}" style="width:100%" label="Name"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column style="width:32px">
+                        <p:rowEditor />
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

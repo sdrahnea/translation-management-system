@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+        <p:panel id="projectDetailCrudPanel" header="#{projectDetailController.crudFormCaption} "> 
+            <p:panelGrid columns="2" >
+
+                <h:outputLabel value="Type" />
+                <p:selectOneMenu 
+                    value="#{projectDetailController.selectedProjectType}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="projectTypeConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectDetailController.projectTypes}" 
+                                   var="projectType" 
+                                   itemLabel="#{projectType.name}" 
+                                   itemValue="#{projectType}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Units" />
+                <p:inputText  value="#{projectDetailController.projectDetail.units}"/>
+
+                <h:outputLabel value="Translator price / unit" />
+                <p:inputText  value="#{projectDetailController.projectDetail.pricePerUnit}"/>
+
+                <h:outputLabel value="Translator price total, #{projectDetailController.projectDetail.currency.name}" />
+                <p:inputText  value="#{projectDetailController.projectDetail.totalPrice}"/>
+
+                <h:outputLabel value="Translator deadline" />
+                <p:calendar  value="#{projectDetailController.projectDetail.deadlineDate}"/>
+
+                <h:outputLabel value="Translator deadline hour" />
+                <p:calendar value="#{projectDetailController.projectDetail.deadlineHour}"
+                            pattern="HH:mm" 
+                            timeOnly="true"
+                            />
+
+                <h:outputLabel value="Payment delay" />
+                <p:inputText  value="#{projectDetailController.projectDetail.paymentDelay}"/>
+
+                <h:outputLabel value="Notes" />
+                <p:inputTextarea  value="#{projectDetailController.projectDetail.notes}"/>
+
+                <h:outputLabel value="Source language" />
+                <p:selectOneMenu 
+                    value="#{projectDetailController.selectedSourceLanguage}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectDetailController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Destination language" />
+                <p:selectOneMenu 
+                    value="#{projectDetailController.selectedDestinationLanguage}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectDetailController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" />
+                </p:selectOneMenu>
+
+
+                <h:outputLabel value="Imported file" />                   
+                <p:outputPanel id="downloadlink">
+                    <p:commandLink  value="#{projectDetailController.projectDetail.fileName}" 
+                                    ajax="false"
+                                    actionListener="#{projectDetailController.prepDownload}"
+                                    >
+                        <p:fileDownload value="#{projectDetailController.download}" />
+                    </p:commandLink>
+                    <p:fileUpload value="#{projectDetailController.projectDetail.fileName}"
+                              fileUploadListener="#{projectDetailController.handleFileUpload}"
+                              mode="advanced"
+                              update="form:downloadlink"
+                              />
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <p:commandButton value="Save" 
+                             process="@all"
+                             actionListener="#{projectDetailController.saveDetail}" 
+                             action="#{projectDetailController.workflowController('projectDetailView')}" 
+                             icon="ui-icon-disk" >
+            </p:commandButton>
+            <p:commandButton value="Cancel" 
+                             action="#{projectDetailController.workflowController('projectDetailView')}" 
+                             icon="ui-icon-disk" />
+
+
+        </p:panel>
+    </ui:define>
+</ui:composition>

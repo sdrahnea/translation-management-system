@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="persistenceUnit" transaction-type="RESOURCE_LOCAL">
+    <class>com.tms.model.entity.PaymentMethod</class>
+    <class>com.tms.model.entity.TranslatorToCat</class>
+    <class>com.tms.model.entity.User</class>
+    <class>com.tms.model.entity.PersonType</class>
+    <class>com.tms.model.entity.Language</class>
+    <class>com.tms.model.entity.Client</class>
+    <class>com.tms.model.entity.Country</class>
+    <class>com.tms.model.entity.StatusType</class>
+    <class>com.tms.model.entity.Industry</class>
+    <class>com.tms.model.entity.ProjectDetail</class>
+    <class>com.tms.model.entity.Translator</class>
+    <class>com.tms.model.entity.ProjectType</class>
+    <class>com.tms.model.entity.NotSentEmail</class>
+    <class>com.tms.model.entity.Role</class>
+    <class>com.tms.model.entity.TranslatorToPaymentMethod</class>
+    <class>com.tms.model.entity.Rating</class>
+    <class>com.tms.model.entity.UserToRole</class>
+    <class>com.tms.model.entity.TimeZone</class>
+    <class>com.tms.model.entity.ServiceProvided</class>
+    <class>com.tms.model.entity.TranslatorFeedback</class>
+    <class>com.tms.model.entity.TranslationArea</class>
+    <class>com.tms.model.entity.Segmentation</class>
+    <class>com.tms.model.entity.Status</class>
+    <class>com.tms.model.entity.Currency</class>
+    <class>com.tms.model.entity.Person</class>
+    <class>com.tms.model.entity.Project</class>
+    <class>com.tms.model.entity.EducationDegree</class>
+    <class>com.tms.model.entity.ProjectDetailTranslatorStatus</class>
+    <class>com.tms.model.entity.Cat</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+    </properties>
+  </persistence-unit>
+</persistence>

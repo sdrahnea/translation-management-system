@@ -1,0 +1,39 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Add new contact person" 
+              widgetVar="contactPersonDialog" 
+              minHeight="40" 
+              appendTo="@(body)" 
+              modal="true"
+              >
+        <h:form>
+            <p:panelGrid columns="2">
+
+                <h:outputLabel value="Name" />
+                <p:inputText  value="#{clientController.contactPerson.name}"/>
+
+                <h:outputLabel value="Invoice email" />
+                <p:inputText  value="#{clientController.contactPerson.email}"/>
+
+                <h:outputLabel value="Phone" />
+                <p:inputText  value="#{clientController.contactPerson.phone}"/>
+
+                <h:outputLabel value="Skype" />
+                <p:inputText  value="#{clientController.contactPerson.skype}"/>
+
+                <p:commandButton value="Save" 
+                                 actionListener="#{clientController.addClientContactPerson}" 
+                                 oncomplete="PF('contactPersonDialog').hide()" 
+                                 process="@all"
+                                 update="@parent"
+                                 icon="ui-icon-disk" />
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

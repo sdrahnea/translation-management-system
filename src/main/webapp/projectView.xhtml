@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel id="projectCrudPanel" header="#{projectController.crudFormCaption} "> 
+
+            <p:panelGrid columns="2" >
+
+                <h:outputLabel value="Name" />
+                <h:outputText value="#{projectController.project.name}"/>
+
+                <h:outputLabel value="Type" />
+                <h:outputText value="#{projectController.project.projectType.name}"/>
+
+                <h:outputLabel value="Translation area" />
+                <h:outputText value="#{projectController.project.translationArea.name}" />
+
+                <h:outputLabel value="Cat" />
+                <h:outputText value="#{projectController.project.cat.name}" />
+
+                <h:outputLabel value="Client" />
+                <h:outputText value="#{projectController.project.client.name}" />
+
+                <h:outputLabel value="Contact person" />
+                <h:outputText value="#{projectController.project.contactPerson.name}" />
+
+                <h:outputLabel value="Sales manager" />
+                <h:outputText value="#{projectController.project.saleManager.name}" />
+
+                <h:outputLabel value="Project deadline" />
+                <p:calendar value="#{projectController.project.deadlineDate}"
+                            disabled="true"
+                            />
+
+                <h:outputLabel value="Project deadline hour" />
+                <p:calendar value="#{projectController.project.deadlineHour}"
+                            pattern="HH:mm" 
+                            timeOnly="true"
+                            disabled="true"
+                            />
+
+                <h:outputLabel value="Time zone" />
+                <h:outputText value="#{projectController.project.timeZone.name}" />
+
+                <h:outputLabel value="Assigned manager" />
+                <h:outputText value="#{projectController.project.assignedManager.name}" />
+
+
+                <h:outputLabel value="Second assigned manager" />
+                <h:outputText value="#{projectController.project.secondManager.name}" />
+
+                <h:outputLabel value="Currency" />
+                <h:outputText value="#{projectController.project.currency.name}" />
+
+                <h:outputLabel value="Units" />
+                <h:outputText  value="#{projectController.project.units}"/>
+
+                <h:outputLabel value="Price/Unit" />
+                <h:outputText  value="#{projectController.project.pricePerUnit}"/>
+
+                <h:outputLabel value="Total price" />
+                <h:outputText  value="#{projectController.project.totalPrice}"/>
+
+                <h:outputLabel value="Client PO number" />
+                <h:outputText  value="#{projectController.project.clientPONumber}"/>
+
+                <h:outputLabel value="Payment delay" />
+                <h:outputText  value="#{projectController.project.paymentDelay}"/>
+
+                <h:outputLabel value="Source language" />
+                <h:outputText  value="#{projectController.project.sourceLanguage.name}"/>
+
+                <h:outputLabel value="Destination language" />
+                <h:outputText  value="#{projectController.project.destinatonLanguage.name}"/>
+
+                <h:outputLabel value="Notes" />
+                <h:outputText  value="#{projectController.project.notes}"/>
+
+            </p:panelGrid>
+
+            <p:panel id="projectDetails" header="Project details" rendered="#{!mainController.loggedUser.clientRole}">
+                <p:panelGrid columns="1">
+
+                    <p:dataTable var="projectDetail" 
+                                 value="#{projectController.project.projectDetails}"
+                                 editable="true"
+                                 >
+
+                        <p:column style="width:16px">
+                            <p:rowToggler />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Id" />  
+                            </f:facet>
+                            <p:commandLink value="#{projectDetail.logicalId}" 
+                                           action="#{projectDetailController.workflowController('projectDetailView','View')}"
+                                           immediate="true"
+                                           >
+                                <f:setPropertyActionListener target="#{projectDetailController.projectDetail}" value="#{projectDetail}" />
+                            </p:commandLink>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Status" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.status.name}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Source language" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.sourceLanguage.name}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Desinaton language" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.destinatonLanguage.name}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Type" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.projectType.name}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Assigned translator" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.translator.name}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Units" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.units}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Translator Price / Unit" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.pricePerUnit}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Translator paid" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.totalPrice}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Project deadline" />  
+                            </f:facet>
+                            <h:outputText value="#{projectDetail.deadlineDate}" />
+                        </p:column>
+
+                        <p:rowExpansion>
+                            <p:panelGrid  columns="2" columnClasses="label,value" style="width:300px">
+
+                                <h:outputText value="Notes" />  
+                                <h:outputText value="#{projectDetail.notes}" />
+
+                            </p:panelGrid>
+                        </p:rowExpansion>
+
+                    </p:dataTable>
+                </p:panelGrid>
+            </p:panel>
+
+            <p:splitButton value="Edit" 
+                           action="#{projectController.workflowController('projectCrud','Edit')}"
+                           icon="ui-icon-disk">
+                <p:menuitem value="Add Project Detail" 
+                            action="#{projectController.workflowController('projectDetailCrud')}" 
+                            icon="ui-icon-plus">
+                    <f:setPropertyActionListener target="#{projectDetailController.projectDetail}" 
+                                                 value="#{projectController.createDetail()}" />
+                </p:menuitem>
+                <p:separator />
+
+                <!--                <p:menuitem value="Mark as paid from client" 
+                                            action="#{projectController.workflowController('projectDetailMarkAsPaidClient')}" 
+                                            icon="ui-icon-star"/>
+                                <p:menuitem value="Mark as paid to translator" 
+                                            action="#{projectController.workflowController('projectDetailMarkAsPaidTranslator')}" 
+                                            icon="ui-icon-person"/>-->
+                <p:menuitem value="Mark as translator informed" 
+                            action="#{projectController.workflowController('projectView')}"
+                            actionListener="#{projectController.markAsInformed}"
+                            />
+                <p:menuitem value="Mark as translator assigned" 
+                            action="#{projectController.workflowController('projectView')}" 
+                            actionListener="#{projectController.markAsAssigned}"
+                            />
+                <p:menuitem value="Mark as delivered" 
+                            action="#{projectController.workflowController('projectView')}" 
+                            actionListener="#{projectController.markAsDelivered}"
+                            />
+                <p:menuitem value="Mark as invoiced" 
+                            action="#{projectController.workflowController('projectDetailMarkAsInvoiced')}" 
+                            />
+                <p:menuitem value="Mark as paid" 
+                            action="#{projectController.workflowController('projectDetailMarkAsPaid')}" 
+                            icon="ui-icon-suitcase" />
+                <p:separator />
+                <p:menuitem value="Move to archive" 
+                            action="#{projectController.workflowController('projectMoveToArchive')}" 
+                            icon="ui-icon-arrowthickstop-1-s" />
+                <p:menuitem value="Restore project" 
+                            action="#{projectController.workflowController('projectRestoreFromArchive')}" 
+                            icon="ui-icon-arrowthickstop-1-n" />
+                <p:separator />
+                <p:menuitem value="Cancel" 
+                            actionListener="#{projectController.cancel}"
+                            action="#{projectController.workflowController('project')}" 
+                            immediate="true"
+                            icon="ui-icon-close"/>
+            </p:splitButton>
+
+
+        </p:panel>
+        
+    </ui:define>
+</ui:composition>

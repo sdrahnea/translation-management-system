@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel id="projectCrudPanel" header="#{projectController.crudFormCaption} "> 
+
+            <p:panelGrid columns="2" >
+
+                <h:outputLabel value="Name" />
+                <p:inputText value="#{projectController.project.name}"/>
+
+                <h:outputLabel value="Type" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedProjectType}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="projectTypeConverter"
+                    required="true"
+                    requiredMessage="Please, choose project type!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.projectTypes}" 
+                                   var="projectType" 
+                                   itemLabel="#{projectType.name}" 
+                                   itemValue="#{projectType}" />
+                </p:selectOneMenu>
+
+
+                <h:outputLabel value="Translation area" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedTranslationArea}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="translationAreaConverter"
+                    required="true"
+                    requiredMessage="Please, choose translation area!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.translationAreas}" 
+                                   var="translationArea" 
+                                   itemLabel="#{translationArea.name}" 
+                                   itemValue="#{translationArea}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Cat" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedCat}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="catConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.cats}" 
+                                   var="cat" 
+                                   itemLabel="#{cat.name}" 
+                                   itemValue="#{cat}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Client" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedClient}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="clientConverter"
+                    required="true"
+                    requiredMessage="Please, choose client!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.clientService.list}" 
+                                   var="client" 
+                                   itemLabel="#{client.name}" 
+                                   itemValue="#{client}" />
+                    <p:ajax listener="#{projectController.onClientChangeEvent}" process="@this" update="contactperson"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Contact person" />
+                <p:outputPanel id="contactperson">
+                    <p:selectOneMenu 
+                        value="#{projectController.selectedContactPerson}"
+                        filter="true" 
+                        filterMatchMode="contains"
+                        converter="personConverter"
+                        required="true"
+                        requiredMessage="Please, choose contact person!"
+                        >
+                        <f:selectItem itemLabel="Select One" itemValue="" />
+                        <f:selectItems value="#{projectController.contactPersons}" 
+                                       var="contactPerson" 
+                                       itemLabel="#{contactPerson.name}" 
+                                       itemValue="#{contactPerson}" />
+                    </p:selectOneMenu>
+                </p:outputPanel>
+
+                <h:outputLabel value="Sales manager" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedSaleManager}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="personConverter"
+                    required="true"
+                    requiredMessage="Please, choose sales manager!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.personService.managerList}" 
+                                   var="saleManager" 
+                                   itemLabel="#{saleManager.name}" 
+                                   itemValue="#{saleManager}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Project deadline" />
+                <p:calendar value="#{projectController.project.deadlineDate}"
+                            required="true"
+                            requiredMessage="Please, choose project deadline!"
+                            />
+
+                <h:outputLabel value="Project deadline hour" />
+                <p:calendar value="#{projectController.project.deadlineHour}"
+                            pattern="HH:mm" 
+                            timeOnly="true"
+                            required="true"
+                            requiredMessage="Please, choose project deadline!"
+                            />
+
+                <h:outputLabel value="Time zone" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedTimeZone}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="timeZoneConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.timeZoneList}" 
+                                   var="timeZone" 
+                                   itemLabel="#{timeZone.name}" 
+                                   itemValue="#{timeZone}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Assigned manager" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedManager}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="personConverter"
+                    required="true"
+                    requiredMessage="Please, choose maanger!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.personService.managerList}" 
+                                   var="manager" 
+                                   itemLabel="#{manager.name}" 
+                                   itemValue="#{manager}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Second assigned manager" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedSeconManager}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="personConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.personService.managerList}" 
+                                   var="secondManager" 
+                                   itemLabel="#{secondManager.name}" 
+                                   itemValue="#{secondManager}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Currency" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedCurrency}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="currencyConverter"
+                    required="true"
+                    requiredMessage="Please, choose currency!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.currencys}" 
+                                   var="currency" 
+                                   itemLabel="#{currency.name}" 
+                                   itemValue="#{currency}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Units" />
+                <p:inputText  value="#{projectController.project.units}"/>
+
+                <h:outputLabel value="Price/Unit" />
+                <p:inputText  value="#{projectController.project.pricePerUnit}"/>
+
+                <h:outputLabel value="Total price" />
+                <p:inputText  value="#{projectController.project.totalPrice}"/>
+
+                <h:outputLabel value="Client PO number" />
+                <p:inputText  value="#{projectController.project.clientPONumber}"
+                              required="true"
+                              requiredMessage="Please, choose client PO number!"
+                              />
+
+                <h:outputLabel value="Payment delay" />
+                <p:selectOneMenu value="#{projectController.project.paymentDelay}"
+                                 required="true"
+                                 requiredMessage="Please, choose payment delay!"
+                                 editable="true"
+                                 >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItem itemLabel="30" itemValue="30" />
+                    <f:selectItem itemLabel="45" itemValue="45" />
+                    <f:selectItem itemLabel="60" itemValue="60" />
+                </p:selectOneMenu>
+
+
+                <h:outputLabel value="Source language" />
+                <p:selectOneMenu 
+                    value="#{projectController.selectedSourceLanguage}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="languageConverter"
+                    required="true"
+                    requiredMessage="Please, choose source language!"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{projectController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Destination language" />
+                <p:selectCheckboxMenu value="#{projectController.selectedDestinationLanguages}" 
+                                      id="selectCheckboxMenuDLID"
+                                      label="#{projectController.selectedDestinationLanguageLabel}"
+                                      filter="true" 
+                                      filterMatchMode="startsWith" 
+                                      converter="languageConverter"
+                                      required="true"
+                                      requiredMessage="Please, choose destination language!"
+                                      >
+                     <f:selectItems value="#{projectController.languages}" 
+                                   var="language" 
+                                   itemLabel="#{language.name}" 
+                                   itemValue="#{language}" />
+                     <p:ajax listener="#{projectController.onDestinationLanguageSelected()}" 
+                                        update="selectCheckboxMenuDLID" />
+                </p:selectCheckboxMenu>
+
+                <h:outputLabel value="Notes" />
+                <p:inputTextarea  value="#{projectController.project.notes}"/>
+
+            </p:panelGrid>
+
+            <p:commandButton value="Save" 
+                             update="@all"
+                             actionListener="#{projectController.saveProject}" 
+                             action="#{projectController.workflowController('projectView')}" 
+                             icon="ui-icon-disk">
+            </p:commandButton>
+            <p:commandButton value="Cancel" 
+                             actionListener="#{projectController.cancel}"
+                             action="#{projectController.workflowController('project')}" 
+                             immediate="true"
+                             icon="ui-icon-close"
+                             />
+        </p:panel>
+    </ui:define>
+</ui:composition>

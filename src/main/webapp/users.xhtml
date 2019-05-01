@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="main.xhtml"
+                >
+
+    <ui:define name="general_content">
+
+        <p:panel header="Users"> 
+            <p:panelGrid columns="2" id="panelgridUserAdmin">
+
+                <h:outputLabel value="Role" />
+                <p:selectOneMenu
+                    value="#{userController.selectedRole}"
+                    filter="true" 
+                    filterMatchMode="contains"
+                    converter="roleConverter"
+                    >
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{userController.roles}" 
+                                   var="role" 
+                                   itemLabel="#{role.name}" 
+                                   itemValue="#{role}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Login" />
+                <p:inputText  value="#{userController.user.login}"/>
+
+                <h:outputLabel value="Password" />
+                <p:inputText  value="#{userController.user.password}"/> 
+
+                <h:outputLabel value="Name" />
+                <p:inputText  value="#{userController.person.name}"/>
+
+                <h:outputLabel value="Email" />
+                <p:inputText  value="#{userController.person.email}"/>
+
+                <h:outputLabel value="Phone" />
+                <p:inputText  value="#{userController.person.phone}"/>
+
+                <h:outputLabel value="Skype" />
+                <p:inputText  value="#{userController.person.skype}"/>
+
+                <h:outputLabel value="Note" />
+                <p:inputTextarea  value="#{userController.user.note}"/>
+
+            </p:panelGrid>
+            <p:commandButton value="Add" 
+                             action="#{userController.saveUser}" 
+                             process="@all"
+                             update="@all"
+                             icon="ui-icon-disk" />
+            <p:dataTable var="user" 
+                         value="#{userController.userList}" 
+                         id="userdatatable"
+                         editable="true" 
+                         style="margin-bottom:20px"
+                         >
+                <f:facet name="header">
+                    User Editing
+                </f:facet>
+
+                <p:ajax event="rowEdit" listener="#{userController.onRowEdit}" update=":form:growl" />
+                <p:ajax event="rowEditCancel" listener="#{userController.onRowCancel}" update=":form:growl" />
+
+                <p:column headerText="Login">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{user.login}"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{user.login}" label="Login"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Name">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{user.name}"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{user.name}" label="Name"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                
+                <p:column headerText="Role">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{user.role.name}"/></f:facet>
+                        <f:facet name="input"><h:outputText value="#{user.role.name}"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Note">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{user.note}"/></f:facet>
+                        <f:facet name="input"><p:inputTextarea value="#{user.note}" label="Note"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Created date">
+                    <h:outputText value="#{user.insertDate}" />
+                </p:column>
+
+
+                <p:column style="width:32px">
+                    <p:rowEditor />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </ui:define>
+</ui:composition>
