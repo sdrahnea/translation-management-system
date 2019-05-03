@@ -6,11 +6,12 @@ Translation Management System helps to manage the projects related to translatio
 3. Client management: edit/update/delete/view all kind of information related clients. 
 4. Archive: shows all archived projects. 
 5. Database: allow admin only to import clients or translators based on excel / csv files.
-6. Settings: allow admin only to manage all system variables such as countries, currencies, transaltion areas, etc.
-7. Invoices: shows all project which has invoiced status.  
-8. Not sent email: shows causes of emails which were not sent. 
-9. Applicant: shows all translators which applied or want to join to the system.
-10. Statistics: shows all financiar results based on projects. 
+6. Users: allow to manage application users. Admin can create the following user's groups: client, translator, manager and admin. Every user's group has a role (access level) and can manage the information related to it's self only. Admin is able to manage any kind of information. 
+7. Settings: allow admin only to manage all system variables such as countries, currencies, transaltion areas, etc.
+8. Invoices: shows all project which has invoiced status.  
+9. Not sent email: shows causes of emails which were not sent. 
+10. Applicant: shows all translators which applied or want to join to the system.
+11. Statistics: shows all financiar results based on projects. 
 
 ## Screenshots
 <img src = "/src/main/resources/screenshots/project-list.png">
