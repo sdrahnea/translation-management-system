@@ -12,6 +12,21 @@ Translation Management System helps to manage the projects related to translatio
 9. Applicant: shows all translators which applied or want to join to the system.
 10. Statistics: shows all financiar results based on projects. 
 
+## Screenshots
+<img src = "/src/main/resources/screenshots/project-list.png">
+<img src = "/src/main/resources/screenshots/project-page.png">
+<img src = "/src/main/resources/screenshots/project-details-page.png">
+<img src = "/src/main/resources/screenshots/client-page.png">
+<img src = "/src/main/resources/screenshots/translator-page.png">
+<img src = "/src/main/resources/screenshots/archive-list.png">
+<img src = "/src/main/resources/screenshots/database-import-page.png">
+<img src = "/src/main/resources/screenshots/users-page.png">
+<img src = "/src/main/resources/screenshots/settings-translation-are-page.png">
+<img src = "/src/main/resources/screenshots/invoices-list.png">
+<img src = "/src/main/resources/screenshots/not-sent-email-list.png">
+<img src = "/src/main/resources/screenshots/applicant-list.png">
+<img src = "/src/main/resources/screenshots/statistics-page.png">
+
 ## Summary
 * Getting Started (Prerequisites, Installing)
 * Running the tests
