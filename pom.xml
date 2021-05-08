@@ -181,7 +181,7 @@
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
-            <version>7.0.0</version>
+            <version>7.17.0</version>
         </dependency>
 
         <dependency>
