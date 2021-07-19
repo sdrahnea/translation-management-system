@@ -48,6 +48,44 @@ Clone or download a copy of this project.
 
 This project requires Java 1.8, Apache Tomcat, MySQL and Maven.
 
+### Database installation
+
+#### 1 H2
+No installation is required.
+The `spring.datasource.url` is the one required property which should be set. By default, the 
+username is `sa` with empty password. Two modes: in memory and file storage. See the `application.properties`
+file for more details related configuration.
+
+#### 2 MySQL 
+
+```
+CREATE DATABSE tms;
+```
+
+Note: in case that you run the application starting with MySQL 8.0.4, please execute the following query:
+```
+ALTER USER '${USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${PASSWORD}';
+-- where ${USER} and ${PASSWORD} should be provided. 
+```
+
+#### 3 Postgres
+Install PostgreSQL. it is required to create a database:
+
+Please, run the following commands if it is the case:
+```
+createuser -U postgres -s Progress
+```
+
+Please, run the following command to import a database (if it is the case):
+```
+pg_restore -d DATABASE_NAME <  PATH/BACKUP_FILE_NAME.sql
+```
+
+To create the JAR file please use the following command:
+```
+mvn clean package
+```
+
 ### Installing
 
 After MySQL instalation, it is required to create a dabase:
@@ -55,6 +93,7 @@ After MySQL instalation, it is required to create a dabase:
 ```
 CREATE DATABSE tms;
 ```
+
 For the first time, when the application will start then all tables and related infortion (project's status, translation status, payment method, education degree, etc) will be created automaticaly. 
 Go to downloaded folder and create the build (you should have something similar like the following):
 ```
