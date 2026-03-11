@@ -12,7 +12,7 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.framework.version>4.0.3.RELEASE</spring.framework.version>
+        <spring.framework.version>5.2.20.RELEASE</spring.framework.version>
     </properties>
     
     <dependencies>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.2</version>
+            <version>6.0</version>
         </dependency>
         <dependency>  
             <groupId>org.primefaces.themes</groupId>  
@@ -219,7 +219,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.16</version>
+            <version>8.0.28</version>
         </dependency> 
         
         <dependency>
