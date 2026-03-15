@@ -10,7 +10,7 @@
 [![Spring](https://img.shields.io/badge/Spring-4.x-6db33f?style=flat-square&logo=spring)](https://spring.io)
 [![Hibernate](https://img.shields.io/badge/Hibernate-5.x-59666c?style=flat-square)](https://hibernate.org)
 [![PrimeFaces](https://img.shields.io/badge/PrimeFaces-JSF-4285F4?style=flat-square)](https://www.primefaces.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](license.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
 </div>
@@ -135,7 +135,7 @@ cd translation-management-system
 |---|---|
 | Java (JDK) | 1.8+ |
 | Apache Maven | 3.x |
-| Apache Tomcat | 8.5+ / 9.x |
+| Apache Tomcat | Optional — embedded Spring Boot server is the default runtime |
 | Database | H2 *(dev)* · MySQL 5.7+ · PostgreSQL 10+ |
 
 ---
@@ -148,11 +148,17 @@ Choose one of the supported databases:
 
 No installation required. Configure the connection URL in `application.properties`:
 
-```properties
-# In-memory (resets on restart)
-spring.datasource.url=jdbc:h2:mem:tms
+##### In-memory H2
 
-# File-based (persists across restarts)
+```properties
+spring.datasource.url=jdbc:h2:mem:tms
+spring.datasource.username=sa
+spring.datasource.password=
+```
+
+##### File-based H2
+
+```properties
 spring.datasource.url=jdbc:h2:file:./data/tms
 spring.datasource.username=sa
 spring.datasource.password=
@@ -189,23 +195,45 @@ On first startup, Hibernate auto-creates all tables and seeds reference data (pr
 mvn clean package
 ```
 
-A successful build produces:
+A successful build produces an executable Spring Boot archive:
 
 ```
 [INFO] Building war: target/translation-management-system-2.1.0-SNAPSHOT.war
 [INFO] BUILD SUCCESS
 ```
 
+You can then run the application with Spring Boot directly:
+
+```bash
+java -jar target/translation-management-system-2.1.0-SNAPSHOT.war
+```
+
 ---
 
 ## 🖥️ Deployment
 
-1. Copy the generated `.war` file into your Tomcat `webapps/` directory.
-2. Start Tomcat.
-3. Open your browser:
+The application runs as a **Spring Boot web application** with an embedded server. The default HTTP port is `8081` and the application context path is `/tms`.
 
+### Option 1 — Run from source
+
+```bash
+mvn spring-boot:run
 ```
-http://localhost:8081/tms/login.xhtml
+
+### Option 2 — Run the packaged archive
+
+```bash
+mvn clean package
+java -jar target/translation-management-system-2.1.0-SNAPSHOT.war
+```
+
+### Open the application
+
+Once the application has started, open one of the following URLs in your browser:
+
+```text
+http://localhost:8081/tms/
+http://localhost:8081/tms/faces/login.xhtml
 ```
 
 **Default credentials:**
@@ -215,6 +243,8 @@ http://localhost:8081/tms/login.xhtml
 | `admin` | `123` |
 
 > ⚠️ Change the default password immediately after the first login in a production environment.
+>
+> ℹ️ External Tomcat deployment is no longer the primary runtime path documented here; prefer the Spring Boot commands above.
 
 ---
 
@@ -319,7 +349,7 @@ This project uses [SemVer](https://semver.org/) for versioning. See [CHANGELOG.m
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the **MIT License** — see the [license.md](license.md) file for details.
 
 ---
 
