@@ -115,7 +115,7 @@ public class Project implements Serializable {
     @Size(max = 4000)
     @Column(name = "notes")
     private String notes;
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<ProjectDetail> projectDetails;
     @Column(name = "insert_date")
     @Temporal(TemporalType.TIMESTAMP)

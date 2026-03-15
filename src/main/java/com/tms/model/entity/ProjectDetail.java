@@ -90,7 +90,7 @@ public class ProjectDetail implements Serializable {
     private String fileName;
     @Column(name = "file_uuid")
     private String fileUUID;
-    @OneToMany(mappedBy = "projectDetail", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "projectDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<ProjectDetailTranslatorStatus> projectDetailTranslatorStatuses;
 
     public ProjectDetail(){}

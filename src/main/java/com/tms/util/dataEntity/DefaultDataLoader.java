@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class DefaultDataLoader {
 
-    @PersistenceContext(unitName = "persistenceUnit")
+    @PersistenceContext
     private EntityManager em;
 
     public void setEm(EntityManager em) {

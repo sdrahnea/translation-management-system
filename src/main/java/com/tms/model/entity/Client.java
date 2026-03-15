@@ -70,7 +70,7 @@ public class Client implements Serializable {
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     @ManyToOne(fetch=FetchType.EAGER)
     private Person firstContactPerson;
-    @OneToMany(mappedBy = "client", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private Collection<ClientToContactPerson> clientToContactPersons;
 
     @Column(name = "insert_date")

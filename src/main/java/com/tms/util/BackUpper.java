@@ -11,6 +11,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.UUID;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,10 @@ public class BackUpper {
 
     private String DEFAULT_PATH = "root/dbbackups/";
     private static final int REMOVE_LAST = 5;
-    
+
+    @Value("${spring.datasource.url:}")
+    private String datasourceUrl;
+
     public BackUpper() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             this.DEFAULT_PATH = "D:/dbbackups/";
@@ -33,9 +37,13 @@ public class BackUpper {
     }
 
     private void backUp() throws IOException, InterruptedException {
+        if (datasourceUrl != null && datasourceUrl.toLowerCase().contains("jdbc:h2:")) {
+            return;
+        }
+
         File dir = new File(DEFAULT_PATH);
-        if (!dir.exists()) {
-            dir.mkdir();
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("Could not create backup directory: " + dir.getAbsolutePath());
         }
 
         //Process runtimeProcess = Runtime.getRuntime().exec("mysqldump -uroot -proot tms > " + DEFAULT_PATH + getRandomUUID() + ".sql");
@@ -64,7 +72,7 @@ public class BackUpper {
         File dir = new File(DEFAULT_PATH);
         if (dir.exists()) {
             File[] files = dir.listFiles();
-            if (files.length > 0) {
+            if (files != null && files.length > 0) {
                 Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
                 restore(files[0].getName());
             }
@@ -82,11 +90,16 @@ public class BackUpper {
         File dir = new File(DEFAULT_PATH);
         if (dir.exists()) {
             File[] files = dir.listFiles();
+            if (files == null) {
+                return;
+            }
             final int arraySize = files.length;
             if (arraySize > REMOVE_LAST) {
                 Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
                 for (int index = REMOVE_LAST; index < arraySize; index++) {
-                    files[index].delete();
+                    if (files[index].exists() && !files[index].delete()) {
+                        files[index].deleteOnExit();
+                    }
                 }
             }
         }

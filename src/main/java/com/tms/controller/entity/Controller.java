@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class Controller<T> implements Serializable {
 
-    @PersistenceContext(unitName = "persistenceUnit")
+    @PersistenceContext
     private EntityManager em;
 
     private String name;

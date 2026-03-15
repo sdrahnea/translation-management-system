@@ -94,8 +94,8 @@ public class Translator implements Serializable {
     @JoinColumn(name = "payment_method_id", referencedColumnName = "id")
     @ManyToOne
     private PaymentMethod paymentMethod;
-    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Collection<TranslatorToPaymentMethod> translatorToPaymentMethods;  
+    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<TranslatorToPaymentMethod> translatorToPaymentMethods;
     @JoinColumn(name = "service_provided_id", referencedColumnName = "id")
     @ManyToOne
     private ServiceProvided serviceProvided;
@@ -123,13 +123,13 @@ public class Translator implements Serializable {
     @Column(name = "insert_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date insertDate;
-    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<TranslatorFeedback> translatorFeedbacks;
-    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<TranslatorToCat> translatorToCats;
-    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<TranslatorToServcieProvided> translatorToServcieProvideds;
-    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<TranslatorToTranslationArea> translatorToTranslationAreas;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne

@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javassist.bytecode.SignatureAttribute.TypeVariable;
 import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
 import javax.persistence.PersistenceContext;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class EntityDaoImp<E> implements EntityDao<E> {
 
-    @PersistenceContext(unitName = "persistenceUnit")
+    @PersistenceContext
     protected EntityManager entityManager;
 
     protected E instance;
@@ -131,12 +130,12 @@ public class EntityDaoImp<E> implements EntityDao<E> {
             if (type instanceof ParameterizedType) {
                 ParameterizedType paramType = (ParameterizedType) type;
                 if (paramType.getActualTypeArguments().length == 2) {
-                    if (paramType.getActualTypeArguments()[1] instanceof TypeVariable) {
+/*                    if (paramType.getActualTypeArguments()[1] instanceof TypeVariable) {
                         throw new IllegalArgumentException(
                                 "Can't find class using reflection");
-                    } else {
+                    } else {*/
                         entityClass = (Class<E>) paramType.getActualTypeArguments()[1];
-                    }
+                    //}
                 } else {
                     entityClass = (Class<E>) paramType.getActualTypeArguments()[0];
                 }

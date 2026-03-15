@@ -33,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -48,13 +49,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ViewScoped
-public class DatabaseController implements Serializable{
+public class DatabaseController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private UploadedFile file;
-    private InputStream fileInputStream = null;
-    private String fileName = null;
+    private String fileName;
     private String selectedImportedItem;
-    
+
     @Autowired
     private PersonDao personDao;
     @Autowired
@@ -77,127 +79,84 @@ public class DatabaseController implements Serializable{
     private TranslatorDao translatorDao;
     @Autowired
     private TranslatorFeedbackDao translatorFeedbackDao;
-    
+
     @PostConstruct
     public void init() {
     }
 
-    public void handleFileUpload(FileUploadEvent event) throws IOException {
-        if (event.getFile() != null) {
-            fileInputStream = event.getFile().getInputstream();
-            fileName = event.getFile().getFileName();
+    public void handleFileUpload(FileUploadEvent event) {
+        if (event != null && event.getFile() != null) {
+            this.file = event.getFile();
+            this.fileName = this.file.getFileName();
         }
     }
 
-    private Sheet getFileSheet() throws IOException {
-        Workbook workbook = null;
-        if (fileName.toLowerCase().endsWith("xlsx")) {
-            workbook = new XSSFWorkbook(fileInputStream);
-        } else if (fileName.toLowerCase().endsWith("xls")) {
-            workbook = new HSSFWorkbook(fileInputStream);
+    private Workbook openWorkbook() throws IOException {
+        if (file == null || isBlank(fileName)) {
+            throw new IOException("No file uploaded.");
         }
 
-        //Get the nth sheet from the workbook
-        Sheet sheet = workbook.getSheetAt(0);
-        return sheet;
+        InputStream inputStream = file.getInputstream();
+        if (fileName.toLowerCase().endsWith(".xlsx")) {
+            return new XSSFWorkbook(inputStream);
+        }
+        if (fileName.toLowerCase().endsWith(".xls")) {
+            return new HSSFWorkbook(inputStream);
+        }
+        throw new IOException("Unsupported file type: " + fileName);
     }
 
     private void importClients() {
-        try {
+        try (Workbook workbook = openWorkbook()) {
             int count = 0;
-            //every sheet has rows, iterate over them
-            Iterator<Row> rowIterator = getFileSheet().iterator();
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+
+            if (rowIterator.hasNext()) {
+                rowIterator.next(); // Skip header row.
+            }
+
             while (rowIterator.hasNext()) {
-                //Get the row object
                 Row row = rowIterator.next();
+                if (isRowBlank(row, 12)) {
+                    continue;
+                }
 
-                //Every row has columns, get the column iterator and iterate over them
-                Iterator<Cell> cellIterator = row.cellIterator();
-                int index = 0;
-                String name = null;
-                String country = null;
-                String contactPerson1 = null;
-                String contactEmail1 = null;
-                String contactPerson2 = null;
-                String contactEmail2 = null;
-                String contactPerson3 = null;
-                String contactEmail3 = null;
-                String invoiceEmail = null;
-                String contactPhone = null;
-                String skype = null;
-                String website = null;
+                String name = getCellString(row, 0);
+                String country = getCellString(row, 1);
+                String contactPerson1 = getCellString(row, 2);
+                String contactEmail1 = getCellString(row, 3);
+                String contactPerson2 = getCellString(row, 4);
+                String contactEmail2 = getCellString(row, 5);
+                String contactPerson3 = getCellString(row, 6);
+                String contactEmail3 = getCellString(row, 7);
+                String invoiceEmail = getCellString(row, 8);
+                String contactPhone = getCellString(row, 9);
+                String skype = getCellString(row, 10);
+                String website = getCellString(row, 11);
 
-                while (cellIterator.hasNext()) {
-                    //Get the Cell object
-                    Cell cell = cellIterator.next();
-                    String cellValue = "" + getCellValue(cell);
-                    switch (index) {
-                        case 0:
-                            name = cellValue;
-                            break;
-                        case 1:
-                            country = cellValue;
-                            break;
-                        case 2:
-                            contactPerson1 = cellValue;
-                            break;
-                        case 3:
-                            contactEmail1 = cellValue;
-                            break;
-                        case 4:
-                            contactPerson2 = cellValue;
-                            break;
-                        case 5:
-                            contactEmail2 = cellValue;
-                            break;
-                        case 6:
-                            contactPerson3 = cellValue;
-                            break;
-                        case 7:
-                            contactEmail3 = cellValue;
-                            break;
-                        case 8:
-                            invoiceEmail = cellValue;
-                            break;
-                        case 9:
-                            contactPhone = cellValue;
-                            break;
-                        case 10:
-                            skype = cellValue;
-                            break;
-                        case 11:
-                            website = cellValue;
-                            break;
-                        default:
-                            break;
-                    }
-                    index++;
-                } //end of cell iterator
-
-                /**
-                 * save all contact persons
-                 */
                 PersonType ptContactPerson = personTypeDao.CONTACT_PERSON();
+
                 Person person1 = null;
-                if (contactPerson1 != null) {
+                if (!isBlank(contactPerson1)) {
                     person1 = new Person(contactPerson1, contactEmail1);
                     personDao.merge(person1);
                 }
+
                 Person person2 = null;
-                if (contactPerson2 != null) {
+                if (!isBlank(contactPerson2)) {
                     person2 = new Person(contactPerson2, contactEmail2);
                     personDao.merge(person2);
                 }
+
                 Person person3 = null;
-                if (contactPerson3 != null) {
+                if (!isBlank(contactPerson3)) {
                     person3 = new Person(contactPerson3, contactEmail3);
                     personDao.merge(person3);
                 }
-                /**
-                 * save client
-                 */
+
                 Client client = new Client();
-                if (country != null) {
+                if (!isBlank(country)) {
                     List<Country> countryList = countryDao.findByName(country);
                     Country countryObject = new Country(country);
                     if (countryList.isEmpty()) {
@@ -207,15 +166,14 @@ public class DatabaseController implements Serializable{
                         client.setCountry(countryList.get(0));
                     }
                 }
+
                 client.setName(name);
                 client.setWebsite(website);
                 client.setInvoiceEmail(invoiceEmail);
                 client.setDescription("contact phone: " + contactPhone + ", skype: " + skype);
 
                 clientDao.merge(client);
-                /**
-                 * create join between contact person and client
-                 */
+
                 if (person1 != null) {
                     person1.setPersonType(ptContactPerson);
                     clientToContactPersonDao.merge(new ClientToContactPerson(client, person1));
@@ -229,7 +187,7 @@ public class DatabaseController implements Serializable{
                     clientToContactPersonDao.merge(new ClientToContactPerson(client, person3));
                 }
                 count++;
-            } //end of rows iterator
+            }
 
             Message.throwInfoMessage("All information ( " + count + " records) from excel file were imported successfully!");
         } catch (Exception ex) {
@@ -238,98 +196,44 @@ public class DatabaseController implements Serializable{
     }
 
     private void importTranslators() {
-        try {
+        try (Workbook workbook = openWorkbook()) {
             int count = 0;
-            //every sheet has rows, iterate over them
-            Iterator<Row> rowIterator = getFileSheet().iterator();
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+
+            if (rowIterator.hasNext()) {
+                rowIterator.next(); // Skip header row.
+            }
+
             while (rowIterator.hasNext()) {
-                //Get the row object
                 Row row = rowIterator.next();
+                if (isRowBlank(row, 16)) {
+                    continue;
+                }
 
-                //Every row has columns, get the column iterator and iterate over them
-                Iterator<Cell> cellIterator = row.cellIterator();
-                int index = 0;
-                String name = null;
-                String country = null;
-                String email = null;
-                String contactPhone = null;
-                String inputLanguage1 = null;
-                String inputLanguage2 = null;
-                String inputLanguage3 = null;
-                String outputLanguage = null;
-                String translationRate = null;
-                String proofReadingRate = null;
-                String serviceProvoded = null;
-                String translationArea = null;
-                String rating = null;
-                String minimumRate = null;
-                String lastComment = null;
-                String linkToProz = null;
-
-                while (cellIterator.hasNext()) {
-                    //Get the Cell object
-                    Cell cell = cellIterator.next();
-                    String cellValue = "" + getCellValue(cell);
-                    switch (index) {
-                        case 0:
-                            name = cellValue;
-                            break;
-                        case 1:
-                            country = cellValue;
-                            break;
-                        case 2:
-                            email = cellValue;
-                            break;
-                        case 3:
-                            contactPhone = cellValue;
-                            break;
-                        case 4:
-                            inputLanguage1 = cellValue;
-                            break;
-                        case 5:
-                            inputLanguage2 = cellValue;
-                            break;
-                        case 6:
-                            inputLanguage3 = cellValue;
-                            break;
-                        case 7:
-                            outputLanguage = cellValue;
-                            break;
-                        case 8:
-                            translationRate = cellValue;
-                            break;
-                        case 9:
-                            proofReadingRate = cellValue;
-                            break;
-                        case 10:
-                            serviceProvoded = cellValue;
-                            break;
-                        case 11:
-                            translationArea = cellValue;
-                            break;
-                        case 12:
-                            rating = cellValue;
-                            break;
-                        case 13:
-                            minimumRate = cellValue;
-                            break;
-                        case 14:
-                            lastComment = cellValue;
-                            break;
-                        case 15:
-                            linkToProz = cellValue;
-                            break;
-                        default:
-                            break;
-                    }
-                    index++;
-                } //end of cell iterator
+                String name = getCellString(row, 0);
+                String country = getCellString(row, 1);
+                String email = getCellString(row, 2);
+                String contactPhone = getCellString(row, 3);
+                String inputLanguage1 = getCellString(row, 4);
+                String inputLanguage2 = getCellString(row, 5);
+                String inputLanguage3 = getCellString(row, 6);
+                String outputLanguage = getCellString(row, 7);
+                String translationRate = getCellString(row, 8);
+                String proofReadingRate = getCellString(row, 9);
+                String serviceProvided = getCellString(row, 10);
+                String translationArea = getCellString(row, 11);
+                String rating = getCellString(row, 12);
+                String minimumRate = getCellString(row, 13);
+                String lastComment = getCellString(row, 14);
+                String linkToProz = getCellString(row, 15);
 
                 Translator translator = new Translator();
                 translator.setName(name);
                 translator.setEmail(email);
                 translator.setContactPhone(contactPhone);
-                if (country != null) {
+
+                if (!isBlank(country)) {
                     List<Country> countryList = countryDao.findByName(country);
                     Country countryObject = new Country(country);
                     if (countryList.isEmpty()) {
@@ -339,71 +243,27 @@ public class DatabaseController implements Serializable{
                         translator.setCountry(countryList.get(0));
                     }
                 }
-                if (inputLanguage1 != null) {
-                    List<Language> languageList = languageDao.findByName(inputLanguage1);
-                    Language languageObject = new Language(inputLanguage1);
-                    if (languageList.isEmpty()) {
-                        languageDao.merge(languageObject);
-                        translator.setInputLanguage1(languageObject);
-                    } else {
-                        translator.setInputLanguage1(languageList.get(0));
-                    }
-                }
-                if (inputLanguage2 != null) {
-                    List<Language> languageList = languageDao.findByName(inputLanguage2);
-                    Language languageObject = new Language(inputLanguage2);
-                    if (languageList.isEmpty()) {
-                        languageDao.merge(languageObject);
-                        translator.setInputLanguage2(languageObject);
-                    } else {
-                        translator.setInputLanguage2(languageList.get(0));
-                    }
-                }
-                if (inputLanguage3 != null) {
-                    List<Language> languageList = languageDao.findByName(inputLanguage3);
-                    Language languageObject = new Language(inputLanguage3);
-                    if (languageList.isEmpty()) {
-                        languageDao.merge(languageObject);
-                        translator.setInputLanguage3(languageObject);
-                    } else {
-                        translator.setInputLanguage3(languageList.get(0));
-                    }
-                }
-                if (outputLanguage != null) {
-                    List<Language> languageList = languageDao.findByName(outputLanguage);
-                    Language languageObject = new Language(outputLanguage);
-                    if (languageList.isEmpty()) {
-                        languageDao.merge(languageObject);
-                        translator.setOutputLanguage(languageObject);
-                    } else {
-                        translator.setOutputLanguage(languageList.get(0));
-                    }
-                }
-                /**
-                 * translator rate
-                 */
-                try {
-                    translator.setTranslatorRate(translationRate != null || translationRate.isEmpty()
-                            ? new BigDecimal(translationRate)
-                            : new BigDecimal(0));
-                } catch (Exception ex) {
 
+                if (!isBlank(inputLanguage1)) {
+                    translator.setInputLanguage1(resolveLanguage(inputLanguage1));
+                }
+                if (!isBlank(inputLanguage2)) {
+                    translator.setInputLanguage2(resolveLanguage(inputLanguage2));
+                }
+                if (!isBlank(inputLanguage3)) {
+                    translator.setInputLanguage3(resolveLanguage(inputLanguage3));
+                }
+                if (!isBlank(outputLanguage)) {
+                    translator.setOutputLanguage(resolveLanguage(outputLanguage));
                 }
 
-                /**
-                 * translator proofrading
-                 */
-                try {
-                    translator.setProofReadingRate(proofReadingRate != null || proofReadingRate.isEmpty()
-                            ? new BigDecimal(proofReadingRate)
-                            : new BigDecimal(0));
-                } catch (Exception exProofReading) {
+                translator.setTranslatorRate(parseDecimalOrZero(translationRate));
+                translator.setProofReadingRate(parseDecimalOrZero(proofReadingRate));
+                translator.setMinimumRate(parseDecimalOrZero(minimumRate));
 
-                }
-
-                if (serviceProvoded != null) {
-                    List<ServiceProvided> serviceProvidedList = serviceProvidedDao.findByName(serviceProvoded);
-                    ServiceProvided serviceProvidedObject = new ServiceProvided(serviceProvoded);
+                if (!isBlank(serviceProvided)) {
+                    List<ServiceProvided> serviceProvidedList = serviceProvidedDao.findByName(serviceProvided);
+                    ServiceProvided serviceProvidedObject = new ServiceProvided(serviceProvided);
                     if (serviceProvidedList.isEmpty()) {
                         serviceProvidedDao.merge(serviceProvidedObject);
                         translator.setServiceProvided(serviceProvidedObject);
@@ -412,7 +272,7 @@ public class DatabaseController implements Serializable{
                     }
                 }
 
-                if (translationArea != null) {
+                if (!isBlank(translationArea)) {
                     List<TranslationArea> translationAreaList = translationAreaDao.findByName(translationArea);
                     TranslationArea translationAreaObject = new TranslationArea(translationArea);
                     if (translationAreaList.isEmpty()) {
@@ -423,60 +283,119 @@ public class DatabaseController implements Serializable{
                     }
                 }
 
-                try {
-                    translator.setMinimumRate(minimumRate != null || minimumRate.isEmpty()
-                            ? new BigDecimal(minimumRate)
-                            : new BigDecimal(0));
-                } catch (Exception exMinimumRate) {
-
-                }
-
                 translator.setLinkToProz(linkToProz);
-
                 translatorDao.merge(translator);
 
-                if (rating != null) {
-                    TranslatorFeedback feedack = new TranslatorFeedback();
-                    
+                if (!isBlank(rating)) {
+                    TranslatorFeedback feedback = new TranslatorFeedback();
+
                     List<Rating> ratingList = ratingDao.findByName(rating);
                     Rating ratingObject = new Rating(rating);
                     if (ratingList.isEmpty()) {
                         ratingDao.merge(ratingObject);
-                        feedack.setRating(ratingObject);
+                        feedback.setRating(ratingObject);
                     } else {
-                        feedack.setRating(ratingList.get(0));
+                        feedback.setRating(ratingList.get(0));
                     }
-                    feedack.setComment(lastComment);
-                    feedack.setTranslator(translator);
-                    
-                    translatorFeedbackDao.merge(feedack);
+                    feedback.setComment(lastComment);
+                    feedback.setTranslator(translator);
+
+                    translatorFeedbackDao.merge(feedback);
                 }
                 count++;
-            } //end of rows iterator
+            }
             Message.throwInfoMessage("All information ( " + count + " records) from excel file were imported successfully!");
         } catch (Exception ex) {
             Message.throwFatalMessage("Execption: " + ex);
         }
     }
 
-    private Object getCellValue(Cell cell) {
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_BOOLEAN:
-                return cell.getBooleanCellValue();
-            case Cell.CELL_TYPE_NUMERIC:
-                return cell.getNumericCellValue();
-            case Cell.CELL_TYPE_STRING:
-                return cell.getStringCellValue();
+    private Language resolveLanguage(String name) {
+        List<Language> languageList = languageDao.findByName(name);
+        Language languageObject = new Language(name);
+        if (languageList.isEmpty()) {
+            languageDao.merge(languageObject);
+            return languageObject;
         }
-        return null;
+        return languageList.get(0);
+    }
+
+    private String getCellString(Row row, int index) {
+        Cell cell = row.getCell(index, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        return getCellValue(cell);
+    }
+
+    private String getCellValue(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+
+        CellType cellType = cell.getCellType();
+        if (cellType == CellType.FORMULA) {
+            cellType = cell.getCachedFormulaResultType();
+        }
+
+        switch (cellType) {
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case NUMERIC:
+                return BigDecimal.valueOf(cell.getNumericCellValue()).stripTrailingZeros().toPlainString();
+            case STRING:
+                return trimToNull(cell.getStringCellValue());
+            default:
+                return null;
+        }
+    }
+
+    private BigDecimal parseDecimalOrZero(String value) {
+        if (isBlank(value)) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            return new BigDecimal(value.trim());
+        } catch (NumberFormatException ex) {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    private boolean isRowBlank(Row row, int maxColumns) {
+        for (int i = 0; i < maxColumns; i++) {
+            if (!isBlank(getCellString(row, i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     public void importData() {
         try {
+            if (isBlank(selectedImportedItem)) {
+                Message.throwWarnMessage("Please select import type: Client or Translator.");
+                return;
+            }
+            if (file == null) {
+                Message.throwWarnMessage("Please upload an Excel file first.");
+                return;
+            }
+
             if (selectedImportedItem.equalsIgnoreCase("Client")) {
                 importClients();
             } else if (selectedImportedItem.equalsIgnoreCase("Translator")) {
                 importTranslators();
+            } else {
+                Message.throwWarnMessage("Unsupported import type: " + selectedImportedItem);
             }
         } catch (Exception ex) {
             Message.throwFatalMessage("Execption: " + ex);

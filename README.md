@@ -205,7 +205,7 @@ A successful build produces:
 3. Open your browser:
 
 ```
-http://localhost:8081/mytemplate/login.xhtml
+http://localhost:8081/tms/login.xhtml
 ```
 
 **Default credentials:**
