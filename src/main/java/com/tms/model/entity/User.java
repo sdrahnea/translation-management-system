@@ -28,7 +28,7 @@ import org.apache.commons.lang3.text.WordUtils;
  * @author sdrahnea
  */
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 @XmlRootElement
 public class User implements Serializable {
 
