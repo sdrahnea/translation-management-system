@@ -1,0 +1,7 @@
+
+# Default ignored files
+/.idea/workspace.xml
+/.idea/*
+/*.iml
+/target/*
+/DUMMY_PATH/
