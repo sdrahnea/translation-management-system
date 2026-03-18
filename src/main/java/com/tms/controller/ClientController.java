@@ -1,5 +1,6 @@
 package com.tms.controller;
 
+import com.tms.repository.CountryRepository;
 import com.tms.util.message.Message;
 import com.tms.model.entity.Client;
 import com.tms.model.entity.ClientToContactPerson;
@@ -9,7 +10,6 @@ import com.tms.model.entity.PersonType;
 import com.tms.model.entity.Project;
 import com.tms.model.entity.Segmentation;
 import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.CountryDao;
 import com.tms.model.entity.dao.PersonDao;
 import com.tms.model.entity.dao.PersonTypeDao;
 import com.tms.model.entity.dao.ProjectDao;
@@ -38,7 +38,7 @@ public class ClientController extends AbstractController<Client> implements Seri
     @Autowired
     private ClientService clientService;
     @Autowired
-    private CountryDao countryDao;
+    private CountryRepository countryRepository;
     @Autowired
     private ClientDao clientDao;
     @Autowired
@@ -99,7 +99,7 @@ public class ClientController extends AbstractController<Client> implements Seri
     public void init() {
         try {
             callAllClient();
-            this.countries = countryDao.findAll();
+            this.countries = countryRepository.findAll();
             this.segmentations = segmentationDao.findAll();
             this.saleManagers = personDao.findAllManagers();
             this.ptContactPerson = personTypeDao.CONTACT_PERSON();

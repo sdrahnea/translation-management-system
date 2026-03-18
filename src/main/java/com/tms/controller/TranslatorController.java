@@ -16,7 +16,6 @@ import com.tms.model.entity.TranslatorToPaymentMethod;
 import com.tms.model.entity.TranslatorToServcieProvided;
 import com.tms.model.entity.TranslatorToTranslationArea;
 import com.tms.model.entity.dao.CatDao;
-import com.tms.model.entity.dao.CountryDao;
 import com.tms.model.entity.dao.CurrencyDao;
 import com.tms.model.entity.dao.EducationDegreeDao;
 import com.tms.model.entity.dao.LanguageDao;
@@ -27,6 +26,7 @@ import com.tms.model.entity.dao.TranslationAreaDao;
 import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.service.ProjectService;
 import com.tms.model.entity.service.TranslatorService;
+import com.tms.repository.CountryRepository;
 import com.tms.util.message.Message;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +60,7 @@ import org.springframework.stereotype.Component;
 public class TranslatorController extends AbstractController<Translator> implements Serializable, ISearcher {
 
     @Autowired
-    private CountryDao countryDao;
+    private CountryRepository countryRepository;
     @Autowired
     private EducationDegreeDao educationDegreeDao;
     @Autowired
@@ -161,7 +161,7 @@ public class TranslatorController extends AbstractController<Translator> impleme
             this.selectedTranslationArea = new TranslationArea();
             this.translatorFeedback = new TranslatorFeedback();
 
-            this.countries = countryDao.findAll();
+            this.countries = countryRepository.findAll();
             this.educationDegrees = educationDegreeDao.findAll();
             this.languages = langaugeDao.findAll();
             this.cats = catDao.findAll();

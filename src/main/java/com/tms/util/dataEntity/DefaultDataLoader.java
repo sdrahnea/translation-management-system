@@ -27,6 +27,7 @@ import com.tms.model.entity.User;
 import com.tms.model.entity.service.ClientService;
 import com.tms.model.entity.service.ProjectService;
 import com.tms.model.entity.service.TranslatorService;
+import com.tms.repository.CountryRepository;
 import com.tms.util.crypt.CryptMD5;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,8 @@ import java.util.Random;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +49,9 @@ public class DefaultDataLoader {
 
     @PersistenceContext
     private EntityManager em;
+
+    @Autowired
+    CountryRepository countryRepository;
 
     public void setEm(EntityManager em) {
         this.em = em;
@@ -315,10 +321,10 @@ public class DefaultDataLoader {
     @Transactional
     public void updateCountries() {
         List<Country> entityCountries = CountryDataEntity.getCountryData();
-        List<Country> database = em.createQuery("FROM Country c").getResultList();
+        List<Country> database = countryRepository.findAll();
         if (database.isEmpty()) {
             for (Country country : entityCountries) {
-                em.persist(country);
+                countryRepository.save(country);
             }
         }
     }

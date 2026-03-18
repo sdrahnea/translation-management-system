@@ -13,7 +13,6 @@ import com.tms.model.entity.Translator;
 import com.tms.model.entity.TranslatorFeedback;
 import com.tms.model.entity.dao.ClientDao;
 import com.tms.model.entity.dao.ClientToContactPersonDao;
-import com.tms.model.entity.dao.CountryDao;
 import com.tms.model.entity.dao.LanguageDao;
 import com.tms.model.entity.dao.PersonDao;
 import com.tms.model.entity.dao.PersonTypeDao;
@@ -22,6 +21,7 @@ import com.tms.model.entity.dao.ServiceProvidedDao;
 import com.tms.model.entity.dao.TranslationAreaDao;
 import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.dao.TranslatorFeedbackDao;
+import com.tms.repository.CountryRepository;
 import com.tms.util.message.Message;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +64,7 @@ public class DatabaseController implements Serializable {
     @Autowired
     private LanguageDao languageDao;
     @Autowired
-    private CountryDao countryDao;
+    private CountryRepository countryRepository;
     @Autowired
     private ClientDao clientDao;
     @Autowired
@@ -157,10 +157,9 @@ public class DatabaseController implements Serializable {
 
                 Client client = new Client();
                 if (!isBlank(country)) {
-                    List<Country> countryList = countryDao.findByName(country);
-                    Country countryObject = new Country(country);
+                    List<Country> countryList = countryRepository.findByName(country);
                     if (countryList.isEmpty()) {
-                        countryDao.merge(countryObject);
+                        Country countryObject = countryRepository.save(new Country(country));
                         client.setCountry(countryObject);
                     } else {
                         client.setCountry(countryList.get(0));
@@ -234,10 +233,9 @@ public class DatabaseController implements Serializable {
                 translator.setContactPhone(contactPhone);
 
                 if (!isBlank(country)) {
-                    List<Country> countryList = countryDao.findByName(country);
-                    Country countryObject = new Country(country);
+                    List<Country> countryList = countryRepository.findByName(country);
                     if (countryList.isEmpty()) {
-                        countryDao.merge(countryObject);
+                        Country countryObject = countryRepository.save(new Country(country));
                         translator.setCountry(countryObject);
                     } else {
                         translator.setCountry(countryList.get(0));

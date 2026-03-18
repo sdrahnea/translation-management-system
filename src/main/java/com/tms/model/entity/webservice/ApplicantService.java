@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.TranslatorToPaymentMethod;
 import com.tms.model.entity.dao.CatDao;
-import com.tms.model.entity.dao.CountryDao;
 import com.tms.model.entity.dao.CurrencyDao;
 import com.tms.model.entity.dao.EducationDegreeDao;
 import com.tms.model.entity.dao.LanguageDao;
@@ -28,6 +27,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.tms.repository.CountryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,7 +42,7 @@ public class ApplicantService extends HttpServlet {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Autowired
-    private CountryDao countryDao;
+    private CountryRepository countryRepository;
 
     @Autowired
     private EducationDegreeDao educationDegreeDao;

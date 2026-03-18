@@ -23,14 +23,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "country")
 @XmlRootElement
-public class Country implements Serializable{
-    
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
+public class Country extends CoreEntity {
+
     @Size(max = 50)
     @Column(name = "name")
     private String name;
@@ -43,18 +37,15 @@ public class Country implements Serializable{
     public Country(String name){
         this.name = name;
     }
-    
+
+    public Country(Integer id, String name) {
+        setId(id);
+        this.name = name;
+    }
+
     public Country(String name, Integer rank){
         this.name = name;
         this.rank = rank;
-    }
-    
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -76,7 +67,7 @@ public class Country implements Serializable{
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (getId() != null ? getId().hashCode() : 0);
         return hash;
     }
 
@@ -87,7 +78,7 @@ public class Country implements Serializable{
             return false;
         }
         Country other = (Country) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
             return false;
         }
         return true;
@@ -95,6 +86,6 @@ public class Country implements Serializable{
 
     @Override
     public String toString() {
-        return "com.tms.model.entity.Country[ id=" + id + " ]";
+        return "com.tms.model.entity.Country[ id=" + getId() + " ]";
     }
 }
