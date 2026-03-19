@@ -9,14 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.TranslatorToPaymentMethod;
-import com.tms.model.entity.dao.CatDao;
-import com.tms.model.entity.dao.CurrencyDao;
-import com.tms.model.entity.dao.EducationDegreeDao;
-import com.tms.model.entity.dao.LanguageDao;
-import com.tms.model.entity.dao.PaymentMethodDao;
-import com.tms.model.entity.dao.ServiceProvidedDao;
-import com.tms.model.entity.dao.TranslationAreaDao;
-import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.service.TranslatorService;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,7 +20,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tms.repository.CountryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -42,34 +33,7 @@ public class ApplicantService extends HttpServlet {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Autowired
-    private CountryRepository countryRepository;
-
-    @Autowired
-    private EducationDegreeDao educationDegreeDao;
-
-    @Autowired
-    private LanguageDao languageDao;
-
-    @Autowired
-    private CatDao catDao;
-
-    @Autowired
-    private CurrencyDao curencyDao;
-
-    @Autowired
-    private ServiceProvidedDao serviceProvidedDao;
-
-    @Autowired
-    private TranslationAreaDao translationAreaDao;
-
-    @Autowired
-    private PaymentMethodDao paymentMethodDao;
-
-    @Autowired
     private TranslatorService translatorService;
-
-    @Autowired
-    private TranslatorDao translatorDao;
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

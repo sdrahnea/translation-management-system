@@ -10,6 +10,8 @@ public abstract class CoreEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
 
     public Integer getId() {

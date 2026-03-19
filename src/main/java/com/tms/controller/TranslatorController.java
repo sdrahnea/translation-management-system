@@ -15,7 +15,6 @@ import com.tms.model.entity.TranslatorToCat;
 import com.tms.model.entity.TranslatorToPaymentMethod;
 import com.tms.model.entity.TranslatorToServcieProvided;
 import com.tms.model.entity.TranslatorToTranslationArea;
-import com.tms.model.entity.dao.CatDao;
 import com.tms.model.entity.dao.CurrencyDao;
 import com.tms.model.entity.dao.EducationDegreeDao;
 import com.tms.model.entity.dao.LanguageDao;
@@ -26,6 +25,7 @@ import com.tms.model.entity.dao.TranslationAreaDao;
 import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.service.ProjectService;
 import com.tms.model.entity.service.TranslatorService;
+import com.tms.repository.CatRepository;
 import com.tms.repository.CountryRepository;
 import com.tms.util.message.Message;
 import java.io.File;
@@ -66,7 +66,7 @@ public class TranslatorController extends AbstractController<Translator> impleme
     @Autowired
     private LanguageDao langaugeDao;
     @Autowired
-    private CatDao catDao;
+    private CatRepository catRepository;
     @Autowired
     private CurrencyDao currencyDao;
     @Autowired
@@ -164,7 +164,7 @@ public class TranslatorController extends AbstractController<Translator> impleme
             this.countries = countryRepository.findAll();
             this.educationDegrees = educationDegreeDao.findAll();
             this.languages = langaugeDao.findAll();
-            this.cats = catDao.findAll();
+            this.cats = catRepository.findAll();
             this.currencies = currencyDao.findAll();
             this.serviceProvideds = serviceProvidedDao.findAll();
             this.traslationAreas = translationAreaDao.findAll();

@@ -14,7 +14,6 @@ import com.tms.model.entity.TimeZone;
 import com.tms.model.entity.TranslationArea;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.User;
-import com.tms.model.entity.dao.CatDao;
 import com.tms.model.entity.dao.ClientDao;
 import com.tms.model.entity.dao.CurrencyDao;
 import com.tms.model.entity.dao.LanguageDao;
@@ -26,6 +25,7 @@ import com.tms.model.entity.dao.TranslationAreaDao;
 import com.tms.model.entity.service.ClientService;
 import com.tms.model.entity.service.PersonService;
 import com.tms.model.entity.service.ProjectService;
+import com.tms.repository.CatRepository;
 import com.tms.util.message.Message;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,7 +71,7 @@ public class ProjectController extends AbstractController<Project> implements Se
     @Autowired
     private CurrencyDao currencyDao;
     @Autowired
-    private CatDao catDao;
+    private CatRepository catRepository;
     @Autowired
     private ClientDao clientDao;
     @Autowired
@@ -171,7 +171,7 @@ public class ProjectController extends AbstractController<Project> implements Se
             this.currencys = currencyDao.findAll();
             this.managers = personDao.findAllManagers();
             this.projectTypes = projectTypeDao.findAll();
-            this.cats = catDao.findAll();
+            this.cats = catRepository.findAll();
             this.clients = clientDao.findAll();
             this.translationAreas = translationAreaDao.findAll();
             this.statuses = statusDao.findProjectStatus();
