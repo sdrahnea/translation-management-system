@@ -18,19 +18,21 @@ import com.tms.model.entity.TranslatorToCat;
 import com.tms.model.entity.TranslatorToPaymentMethod;
 import com.tms.model.entity.TranslatorToServcieProvided;
 import com.tms.model.entity.TranslatorToTranslationArea;
-import com.tms.model.entity.dao.PaymentMethodDao;
-import com.tms.model.entity.dao.TranslatorDao;
-import com.tms.model.entity.dao.TranslatorFeedbackDao;
-import com.tms.model.entity.dao.TranslatorToCatDao;
-import com.tms.model.entity.dao.TranslatorToPaymentMethodDao;
-import com.tms.model.entity.dao.TranslatorToServiceProvidedDao;
-import com.tms.model.entity.dao.TranslatorToTranslateAreaDao;
+import com.tms.repository.PaymentMethodRepository;
+import com.tms.repository.TranslatorFeedbackRepository;
+import com.tms.repository.TranslatorRepository;
+import com.tms.repository.TranslatorToCatRepository;
+import com.tms.repository.TranslatorToPaymentMethodRepository;
+import com.tms.repository.TranslatorToServcieProvidedRepository;
+import com.tms.repository.TranslatorToTranslationAreaRepository;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,25 +46,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class TranslatorService implements Serializable {
 
     @Autowired
-    private TranslatorDao translatorDao;
+    private TranslatorRepository translatorRepository;
 
     @Autowired
-    private TranslatorToCatDao translatorToCatDao;
+    private TranslatorToCatRepository translatorToCatRepository;
 
     @Autowired
-    private PaymentMethodDao paymentMethodDao;
+    private PaymentMethodRepository paymentMethodRepository;
 
     @Autowired
-    private TranslatorToPaymentMethodDao translatorToPaymentMethodDao;
+    private TranslatorToPaymentMethodRepository translatorToPaymentMethodRepository;
 
     @Autowired
-    private TranslatorToTranslateAreaDao translatorToTranslateAreaDao;
+    private TranslatorToTranslationAreaRepository translatorToTranslationAreaRepository;
 
     @Autowired
-    private TranslatorToServiceProvidedDao translatorToServiceProvidedDao;
+    private TranslatorToServcieProvidedRepository translatorToServcieProvidedRepository;
 
     @Autowired
-    private TranslatorFeedbackDao translatorFeedbackDao;
+    private TranslatorFeedbackRepository translatorFeedbackRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * isEnabled is true for translators and isEnabled is false for applicants
@@ -80,7 +85,7 @@ public class TranslatorService implements Serializable {
             sql.append(" AND (isEnabled is :isEnabled)");
         }
 
-        Query query = translatorDao.getEntityManager().createQuery(sql.toString());
+        Query query = entityManager.createQuery(sql.toString());
         for (Parameter p : query.getParameters()) {
             query.setParameter(p, pars.get(p.getName()));
         }
@@ -151,7 +156,7 @@ public class TranslatorService implements Serializable {
             sql.append(" AND (isEnabled is :isEnabled)");
         }
 
-        Query query = translatorDao.getEntityManager().createQuery(sql.toString());
+        Query query = entityManager.createQuery(sql.toString());
         for (Parameter p : query.getParameters()) {
             query.setParameter(p, pars.get(p.getName()));
         }
@@ -168,7 +173,7 @@ public class TranslatorService implements Serializable {
     @Transactional
     public void changeToTranslator(Translator translator) {
         translator.setIsEnabled(true);
-        translatorDao.merge(translator);
+        translatorRepository.save(translator);
     }
 
     /**
@@ -181,12 +186,12 @@ public class TranslatorService implements Serializable {
     @Transactional
     public void create(Translator translator, List<TranslatorToPaymentMethod> translatorToPaymentMethodList) {
         translator.setIsEnabled(true);
-        translatorDao.merge(translator);
+        translatorRepository.save(translator);
 
         for (TranslatorToPaymentMethod ttpm : translatorToPaymentMethodList) {
-            paymentMethodDao.merge(ttpm.getPaymentMethod());
+            paymentMethodRepository.save(ttpm.getPaymentMethod());
             ttpm.setTranslator(translator);
-            translatorToPaymentMethodDao.merge(ttpm);
+            translatorToPaymentMethodRepository.save(ttpm);
         }
     }
 
@@ -234,7 +239,7 @@ public class TranslatorService implements Serializable {
         translator.setTranslationArea(translationArea);
         translator.setServiceProvided(serviceProvided);
         translator.setIsEnabled(true);
-        translator = translatorDao.merge(translator);
+        translator = translatorRepository.save(translator);
 
 //        TranslatorFeedback lastTranslatorFeedback = translator.getLastTranslatorFeedback();
 //        if (lastTranslatorFeedback.getRatingAsNumber() != translatorFeedback.getRatingAsNumber()
@@ -243,34 +248,34 @@ public class TranslatorService implements Serializable {
             tf.setTranslator(translator);
             tf.setRatingAsNumber(translatorFeedback.getRatingAsNumber());
             tf.setComment(translatorFeedback.getComment());
-            translatorFeedbackDao.merge(tf);
-            
+            translatorFeedbackRepository.save(tf);
+
 //            translator.getTranslatorFeedbacks().add(translatorFeedback);
 //            translator = translatorDao.merge(translator);
 //        } 
 
-        translatorToCatDao.removeBy(translator);
+        translatorToCatRepository.removeBy(translator);
         for (Cat scat : catList) {
-            TranslatorToCat join = translatorToCatDao.find(translator, scat);
-            translatorToCatDao.merge(join);
+            TranslatorToCat join = translatorToCatRepository.find(translator, scat);
+            translatorToCatRepository.save(join);
         }
 
         for (TranslatorToPaymentMethod ttpm : translatorToPaymentMethodList) {
             ttpm.setTranslator(translator);
-            paymentMethodDao.merge(ttpm.getPaymentMethod());
-            translatorToPaymentMethodDao.merge(ttpm);
+            paymentMethodRepository.save(ttpm.getPaymentMethod());
+            translatorToPaymentMethodRepository.save(ttpm);
         }
 
-        translatorToServiceProvidedDao.removeBy(translator);
+        translatorToServcieProvidedRepository.removeBy(translator);
         for (ServiceProvided ssp : serviceProvidedList) {
-            TranslatorToServcieProvided join = translatorToServiceProvidedDao.find(translator, ssp);
-            translatorToServiceProvidedDao.merge(join);
+            TranslatorToServcieProvided join = translatorToServcieProvidedRepository.find(translator, ssp);
+            translatorToServcieProvidedRepository.save(join);
         }
 
-        translatorToTranslateAreaDao.removeBy(translator);
+        translatorToTranslationAreaRepository.removeBy(translator);
         for (TranslationArea sta : translationAreaList) {
-            TranslatorToTranslationArea join = translatorToTranslateAreaDao.find(translator, sta);
-            translatorToTranslateAreaDao.merge(join);
+            TranslatorToTranslationArea join = translatorToTranslationAreaRepository.find(translator, sta);
+            translatorToTranslationAreaRepository.save(join);
         }
     }
 

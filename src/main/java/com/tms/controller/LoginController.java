@@ -1,7 +1,7 @@
 package com.tms.controller;
 
 import com.tms.model.entity.User;
-import com.tms.model.entity.dao.UserDao;
+import com.tms.repository.UserRepository;
 import com.tms.util.SessionUtil;
 import com.tms.util.crypt.CryptMD5;
 import com.tms.util.dataEntity.DefaultDataLoader;
@@ -31,7 +31,7 @@ public class LoginController implements Serializable {
     private String password;
 
     @Autowired
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Autowired
     private DefaultDataLoader defaultDataLoader;
@@ -58,7 +58,7 @@ public class LoginController implements Serializable {
                 return "main";
             }
         } else {
-            List<User> userList = userDao.findByProperty("login", userName);
+            List<User> userList = userRepository.findByLogin(userName);
 
             boolean isOurUser = false;
             for (User u : userList) {

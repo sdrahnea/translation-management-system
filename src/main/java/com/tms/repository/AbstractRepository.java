@@ -1,10 +1,10 @@
 package com.tms.repository;
 
-import com.tms.model.entity.CoreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-public interface AbstractRepository<T extends CoreEntity> extends JpaRepository<T, Integer> {
+import java.io.Serializable;
 
-
-
+@NoRepositoryBean
+public interface AbstractRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
 }

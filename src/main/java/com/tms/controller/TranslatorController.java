@@ -15,18 +15,17 @@ import com.tms.model.entity.TranslatorToCat;
 import com.tms.model.entity.TranslatorToPaymentMethod;
 import com.tms.model.entity.TranslatorToServcieProvided;
 import com.tms.model.entity.TranslatorToTranslationArea;
-import com.tms.model.entity.dao.CurrencyDao;
-import com.tms.model.entity.dao.EducationDegreeDao;
-import com.tms.model.entity.dao.LanguageDao;
-import com.tms.model.entity.dao.PaymentMethodDao;
-import com.tms.model.entity.dao.ProjectDao;
-import com.tms.model.entity.dao.ServiceProvidedDao;
-import com.tms.model.entity.dao.TranslationAreaDao;
-import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.service.ProjectService;
 import com.tms.model.entity.service.TranslatorService;
 import com.tms.repository.CatRepository;
 import com.tms.repository.CountryRepository;
+import com.tms.repository.CurrencyRepository;
+import com.tms.repository.EducationDegreeRepository;
+import com.tms.repository.LanguageRepository;
+import com.tms.repository.PaymentMethodRepository;
+import com.tms.repository.ServiceProvidedRepository;
+import com.tms.repository.TranslationAreaRepository;
+import com.tms.repository.TranslatorRepository;
 import com.tms.util.message.Message;
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,23 +61,21 @@ public class TranslatorController extends AbstractController<Translator> impleme
     @Autowired
     private CountryRepository countryRepository;
     @Autowired
-    private EducationDegreeDao educationDegreeDao;
+    private EducationDegreeRepository educationDegreeRepository;
     @Autowired
-    private LanguageDao langaugeDao;
+    private LanguageRepository languageRepository;
     @Autowired
     private CatRepository catRepository;
     @Autowired
-    private CurrencyDao currencyDao;
+    private CurrencyRepository currencyRepository;
     @Autowired
-    private ServiceProvidedDao serviceProvidedDao;
+    private ServiceProvidedRepository serviceProvidedRepository;
     @Autowired
-    private TranslationAreaDao translationAreaDao;
+    private TranslationAreaRepository translationAreaRepository;
     @Autowired
-    private PaymentMethodDao paymentMethodDao;
+    private PaymentMethodRepository paymentMethodRepository;
     @Autowired
-    private TranslatorDao translatorDao;
-    @Autowired
-    private ProjectDao projectDao;
+    private TranslatorRepository translatorRepository;
 
     @Autowired
     private TranslatorService translatorService;
@@ -162,13 +159,13 @@ public class TranslatorController extends AbstractController<Translator> impleme
             this.translatorFeedback = new TranslatorFeedback();
 
             this.countries = countryRepository.findAll();
-            this.educationDegrees = educationDegreeDao.findAll();
-            this.languages = langaugeDao.findAll();
+            this.educationDegrees = educationDegreeRepository.findAll();
+            this.languages = languageRepository.findAll();
             this.cats = catRepository.findAll();
-            this.currencies = currencyDao.findAll();
-            this.serviceProvideds = serviceProvidedDao.findAll();
-            this.traslationAreas = translationAreaDao.findAll();
-            this.paymentMethodList = paymentMethodDao.findAll();
+            this.currencies = currencyRepository.findAll();
+            this.serviceProvideds = serviceProvidedRepository.findAll();
+            this.traslationAreas = translationAreaRepository.findAll();
+            this.paymentMethodList = paymentMethodRepository.findAll();
             callAllTranslators();
             callAllApplicants();
         } catch (Exception ex) {
@@ -281,7 +278,7 @@ public class TranslatorController extends AbstractController<Translator> impleme
             }
             this.translator.setFileName(ufile.getFileName());
             this.translator.setFileUUID(fileUUID);
-            translatorDao.merge(translator);
+            translatorRepository.save(translator);
         }
     }
 

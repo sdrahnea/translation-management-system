@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CountryRepository extends AbstractRepository<Country> {
+public interface CountryRepository extends AbstractRepository<Country, Integer> {
 
     List<Country> findByName(final String name);
 

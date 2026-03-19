@@ -18,18 +18,20 @@ import com.tms.model.entity.TimeZone;
 import com.tms.model.entity.TranslationArea;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.User;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.ProjectDao;
-import com.tms.model.entity.dao.ProjectTypeDao;
-import com.tms.model.entity.dao.StatusDao;
-import com.tms.model.entity.dao.TranslatorDao;
+import com.tms.repository.ClientRepository;
+import com.tms.repository.ProjectRepository;
+import com.tms.repository.ProjectTypeRepository;
+import com.tms.repository.StatusRepository;
+import com.tms.repository.TranslatorRepository;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,15 +47,18 @@ public class ProjectService implements Serializable {
     @Autowired
     private ProjectDetailService projectDetailService;
     @Autowired
-    private ProjectDao projectDao;
+    private ProjectRepository projectRepository;
     @Autowired
-    private StatusDao statusDao;
+    private StatusRepository statusRepository;
     @Autowired
-    private ClientDao clientDao;
+    private ClientRepository clientRepository;
     @Autowired
-    private TranslatorDao translatorDao;
+    private TranslatorRepository translatorRepository;
     @Autowired
-    private ProjectTypeDao projectTypeDao;
+    private ProjectTypeRepository projectTypeRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public List<Project> search(Person assignedManager, String clientName,
@@ -123,7 +128,7 @@ public class ProjectService implements Serializable {
             sql.append(" AND (translator.email LIKE CONCAT('%', :translatorEmail, '%'))");
         }
 
-        Query query = projectDao.getEntityManager().createQuery(sql.toString());
+        Query query = entityManager.createQuery(sql.toString());
         for (Parameter p : query.getParameters()) {
             query.setParameter(p, pars.get(p.getName()));
         }
@@ -165,7 +170,7 @@ public class ProjectService implements Serializable {
          */
         Status status = null;
         if (!isEditOption) {
-            status = statusDao.find("NEW");
+            status = statusRepository.find("NEW");
         }
         /**
          * set entered parameters and create a new project
@@ -188,18 +193,18 @@ public class ProjectService implements Serializable {
             project.setStatus(status);
             project.setInsertDate(new Date());
         }
-        project = projectDao.merge(project);
+        project = projectRepository.save(project);
 
         if (!isEditOption) {
             List<ProjectDetail> details = new LinkedList<>();
             if (isMultiLanguageSelect) {
                 for (Language language : multiDestinationLanguages) {
                     if (projectType.isTEP()) {
-                        ProjectDetail pdt = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", language, projectTypeDao.T());
+                        ProjectDetail pdt = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", language, projectTypeRepository.T());
                         details.add(pdt);
                         project.setProjectDetails(details);
 
-                        ProjectDetail pde = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", language, projectTypeDao.PE());
+                        ProjectDetail pde = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", language, projectTypeRepository.PE());
                         details.add(pde);
                         project.setProjectDetails(details);
                     } else {
@@ -210,11 +215,11 @@ public class ProjectService implements Serializable {
                 }
             } else {
                 if (projectType.isTEP()) {
-                    ProjectDetail pdt = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", project.getDestinatonLanguage(), projectTypeDao.T());
+                    ProjectDetail pdt = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", project.getDestinatonLanguage(), projectTypeRepository.T());
                     details.add(pdt);
                     project.setProjectDetails(details);
 
-                    ProjectDetail pde = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", project.getDestinatonLanguage(), projectTypeDao.PE());
+                    ProjectDetail pde = projectDetailService.create(project, fileName, fileUUID, status, "Project was cerated at " + (new Date()) + ".", project.getDestinatonLanguage(), projectTypeRepository.PE());
                     details.add(pde);
                     project.setProjectDetails(details);
                 } else {
@@ -231,15 +236,15 @@ public class ProjectService implements Serializable {
     @Transactional
     public List<Project> getProjects(final User user) {
         if (user.isClientRole()) {
-            Client client = clientDao.getClient(user);
+            Client client = clientRepository.getClient(user);
             if (client != null) {
-                return projectDao.getNotInvoicedOrArchivied(client);
+                return projectRepository.getNotInvoicedOrArchivied(client);
             }
         } else if (user.isTranslatorRole()) {
             List<Project> resultList = new LinkedList<>();
-            Translator translator = translatorDao.getTranslator(user);
+            Translator translator = translatorRepository.getTranslator(user);
             if (translator != null) {
-                for (Project p : projectDao.getNotInvoicedOrArchivied()) {
+                for (Project p : projectRepository.getNotInvoicedOrArchivied()) {
                     if (!p.getProjectDetail(translator).isEmpty()) {
                         p.setProjectDetails(p.getProjectDetail(translator));
                         resultList.add(p);
@@ -248,15 +253,15 @@ public class ProjectService implements Serializable {
             }
             return resultList;
         }
-        return projectDao.getNotInvoicedOrArchivied();
+        return projectRepository.getNotInvoicedOrArchivied();
     }
 
     public List<Project> getInvoicedProjects() {
-        return projectDao.getInvoived();
+        return projectRepository.getInvoived();
     }
 
     public List<Project> getArchivedProjects() {
-        return projectDao.getArchived();
+        return projectRepository.getArchived();
     }
 
     /**
@@ -270,7 +275,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        Status status = statusDao.find("ARCHIVED");
+        Status status = statusRepository.find("ARCHIVED");
         changeProjectStatusTo(project, status);
 //        projectDetailService.create(project, status, "Project was moved in Archives on " + (new Date()) + ".");
     }
@@ -286,7 +291,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status status = statusDao.find("RESTORED");
+        final Status status = statusRepository.find("RESTORED");
         changeProjectStatusTo(project, status);
 //        projectDetailService.create(project, status, "Project was retored on " + (new Date()) + ".");
     }
@@ -302,7 +307,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status status = statusDao.find("CLIENT_PAID");
+        final Status status = statusRepository.find("CLIENT_PAID");
         changeProjectStatusTo(project, status);
 //        projectDetailService.create(project, status, "Project was marked as CLIENT PAID status at " + (new Date())
 //                + " date time. Expected payment from client is " + project.getClientExpectedPayment()
@@ -320,7 +325,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status status = statusDao.find("TRANSLATOR_PAID");
+        final Status status = statusRepository.find("TRANSLATOR_PAID");
         changeProjectStatusTo(project, status);
 //        projectDetailService.create(project, status, "Project was marked as TRANSLATOR PAID status at " + (new Date())
 //                + " date time. Translator actual payment is " + project.getTranslatorActualPayment() + ".");
@@ -337,7 +342,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status invoicedStatus = statusDao.find("INVOICED");
+        final Status invoicedStatus = statusRepository.find("INVOICED");
         changeProjectStatusTo(project, invoicedStatus);
         //projectDetailService.create(project, invoicedStatus, "Project was marked as INVOICED status at " + (new Date()) + " date time.");
     }
@@ -347,7 +352,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status invoicedStatus = statusDao.find("DELIVERED");
+        final Status invoicedStatus = statusRepository.find("DELIVERED");
         changeProjectStatusTo(project, invoicedStatus);
     }
 
@@ -356,7 +361,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status invoicedStatus = statusDao.find("INFORMED");
+        final Status invoicedStatus = statusRepository.find("INFORMED");
         changeProjectStatusTo(project, invoicedStatus);
     }
 
@@ -365,7 +370,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status invoicedStatus = statusDao.find("ASSIGNED");
+        final Status invoicedStatus = statusRepository.find("ASSIGNED");
         changeProjectStatusTo(project, invoicedStatus);
     }
 
@@ -380,7 +385,7 @@ public class ProjectService implements Serializable {
         if (project == null) {
             throw new RuntimeException("Please, select a project!");
         }
-        final Status paidStatus = statusDao.find("PAID");
+        final Status paidStatus = statusRepository.find("PAID");
         changeProjectStatusTo(project, paidStatus);
         //projectDetailService.create(project, paidStatus, "Project was marked as PAID status at " + (new Date()) + " date time.");
     }
@@ -393,17 +398,17 @@ public class ProjectService implements Serializable {
      */
     private void changeProjectStatusTo(Project project, final Status status) {
         project.setStatus(status);
-        projectDao.merge(project);
+        projectRepository.save(project);
     }
 
     public ProjectDetail createNewEmptyDetail(Project project) {
-        final Status status = statusDao.find("NEW");
+        final Status status = statusRepository.find("NEW");
         return projectDetailService.create(project, status);
     }
 
     @Transactional(readOnly = true)
     public List<Project> getProjects(Translator translator){
-        List<Project> allProject = projectDao.findAll();
+        List<Project> allProject = projectRepository.findAll();
         List<Project> result = new LinkedList<>();
         for (Project project : allProject){
             if (project.isProjectHandledBy(translator)){

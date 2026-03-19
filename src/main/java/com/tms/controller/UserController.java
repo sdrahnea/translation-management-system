@@ -6,12 +6,12 @@ import com.tms.model.entity.PersonType;
 import com.tms.model.entity.Role;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.User;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.PersonDao;
-import com.tms.model.entity.dao.PersonTypeDao;
-import com.tms.model.entity.dao.RoleDao;
-import com.tms.model.entity.dao.TranslatorDao;
-import com.tms.model.entity.dao.UserDao;
+import com.tms.repository.ClientRepository;
+import com.tms.repository.PersonRepository;
+import com.tms.repository.PersonTypeRepository;
+import com.tms.repository.RoleRepository;
+import com.tms.repository.TranslatorRepository;
+import com.tms.repository.UserRepository;
 import com.tms.util.crypt.CryptMD5;
 import com.tms.util.message.Message;
 import java.io.Serializable;
@@ -52,23 +52,23 @@ public class UserController implements Serializable {
     private String newPassword;
 
     @Autowired
-    private RoleDao roleDao;
-    
+    private RoleRepository roleRepository;
+
     @Autowired
-    private TranslatorDao translatorDao;
-    
+    private TranslatorRepository translatorRepository;
+
     @Autowired
-    private ClientDao clientDao;
-    
+    private ClientRepository clientRepository;
+
     @Autowired
-    private PersonTypeDao personTypeDao;
-    
+    private PersonTypeRepository personTypeRepository;
+
     @Autowired
-    private PersonDao personDao;
-    
+    private PersonRepository personRepository;
+
     @Autowired
-    private UserDao userDao;
-    
+    private UserRepository userRepository;
+
     @Autowired
     private HttpSession httpSession;
     
@@ -76,9 +76,9 @@ public class UserController implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            this.roles = roleDao.findAll();
-            this.translators = translatorDao.findAll();
-            this.clients = clientDao.findAll();
+            this.roles = roleRepository.findAll();
+            this.translators = translatorRepository.findAll();
+            this.clients = clientRepository.findAll();
             callUserList();
         } catch (Exception ex) {
 
@@ -86,7 +86,7 @@ public class UserController implements Serializable {
     }
 
     private void callUserList() {
-        this.userList = userDao.findAll();
+        this.userList = userRepository.findAll();
     }
 
     public void onRoleSelect() {
@@ -109,7 +109,7 @@ public class UserController implements Serializable {
         } else if (CryptMD5.getHashPassword(sessionUser, oldPassword).equalsIgnoreCase(sessionUser.getPassword())) {
             User user = (User) httpSession.getAttribute("user");
             user = CryptMD5.createHashPassword(user, newPassword);
-            userDao.merge(user);
+            userRepository.save(user);
         } else {
             Message.throwFatalMessage("Old password is not correct!");
         }
@@ -118,10 +118,10 @@ public class UserController implements Serializable {
 
     public void saveUser() {
         if (selectedRole.getName().contains("MANAGER")) {
-            PersonType type = personTypeDao.MANAGER();
+            PersonType type = personTypeRepository.MANAGER();
             person.setPersonType(type);
         }
-        personDao.merge(person);
+        personRepository.save(person);
 
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user = CryptMD5.createHashPassword(user, "123");
@@ -131,7 +131,7 @@ public class UserController implements Serializable {
         user.setRole(selectedRole);
         user.setInsertDate(new Date());
         user.setName(person.getName());
-        userDao.merge(user);
+        userRepository.save(user);
 
         if (selectedRole.getName().contains("TRANSLATOR")) {
             Translator translator = new Translator();
@@ -139,13 +139,13 @@ public class UserController implements Serializable {
             translator.setName(person.getName());
             translator.setEmail(person.getEmail());
             translator.setContactPhone(person.getPhone());
-            translatorDao.merge(translator);
+            translatorRepository.save(translator);
         } else if (selectedRole.getName().contains("CLIENT")) {
             Client client = new Client();
             client.setUser(user);
             client.setName(person.getName());
             client.setInvoiceEmail(person.getEmail());
-            clientDao.merge(client);
+            clientRepository.save(client);
         }
 
         selectedClient = null;

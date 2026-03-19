@@ -11,17 +11,17 @@ import com.tms.model.entity.ServiceProvided;
 import com.tms.model.entity.TranslationArea;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.TranslatorFeedback;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.ClientToContactPersonDao;
-import com.tms.model.entity.dao.LanguageDao;
-import com.tms.model.entity.dao.PersonDao;
-import com.tms.model.entity.dao.PersonTypeDao;
-import com.tms.model.entity.dao.RatingDao;
-import com.tms.model.entity.dao.ServiceProvidedDao;
-import com.tms.model.entity.dao.TranslationAreaDao;
-import com.tms.model.entity.dao.TranslatorDao;
-import com.tms.model.entity.dao.TranslatorFeedbackDao;
+import com.tms.repository.ClientRepository;
+import com.tms.repository.ClientToContactPersonRepository;
 import com.tms.repository.CountryRepository;
+import com.tms.repository.LanguageRepository;
+import com.tms.repository.PersonRepository;
+import com.tms.repository.PersonTypeRepository;
+import com.tms.repository.RatingRepository;
+import com.tms.repository.ServiceProvidedRepository;
+import com.tms.repository.TranslationAreaRepository;
+import com.tms.repository.TranslatorFeedbackRepository;
+import com.tms.repository.TranslatorRepository;
 import com.tms.util.message.Message;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,27 +58,27 @@ public class DatabaseController implements Serializable {
     private String selectedImportedItem;
 
     @Autowired
-    private PersonDao personDao;
+    private PersonRepository personRepository;
     @Autowired
-    private PersonTypeDao personTypeDao;
+    private PersonTypeRepository personTypeRepository;
     @Autowired
-    private LanguageDao languageDao;
+    private LanguageRepository languageRepository;
     @Autowired
     private CountryRepository countryRepository;
     @Autowired
-    private ClientDao clientDao;
+    private ClientRepository clientRepository;
     @Autowired
-    private ClientToContactPersonDao clientToContactPersonDao;
+    private ClientToContactPersonRepository clientToContactPersonRepository;
     @Autowired
-    private ServiceProvidedDao serviceProvidedDao;
+    private ServiceProvidedRepository serviceProvidedRepository;
     @Autowired
-    private TranslationAreaDao translationAreaDao;
+    private TranslationAreaRepository translationAreaRepository;
     @Autowired
-    private RatingDao ratingDao;
+    private RatingRepository ratingRepository;
     @Autowired
-    private TranslatorDao translatorDao;
+    private TranslatorRepository translatorRepository;
     @Autowired
-    private TranslatorFeedbackDao translatorFeedbackDao;
+    private TranslatorFeedbackRepository translatorFeedbackRepository;
 
     @PostConstruct
     public void init() {
@@ -135,24 +135,27 @@ public class DatabaseController implements Serializable {
                 String skype = getCellString(row, 10);
                 String website = getCellString(row, 11);
 
-                PersonType ptContactPerson = personTypeDao.CONTACT_PERSON();
+                PersonType ptContactPerson = personTypeRepository.CONTACT_PERSON();
 
                 Person person1 = null;
                 if (!isBlank(contactPerson1)) {
                     person1 = new Person(contactPerson1, contactEmail1);
-                    personDao.merge(person1);
+                    person1.setPersonType(ptContactPerson);
+                    person1 = personRepository.save(person1);
                 }
 
                 Person person2 = null;
                 if (!isBlank(contactPerson2)) {
                     person2 = new Person(contactPerson2, contactEmail2);
-                    personDao.merge(person2);
+                    person2.setPersonType(ptContactPerson);
+                    person2 = personRepository.save(person2);
                 }
 
                 Person person3 = null;
                 if (!isBlank(contactPerson3)) {
                     person3 = new Person(contactPerson3, contactEmail3);
-                    personDao.merge(person3);
+                    person3.setPersonType(ptContactPerson);
+                    person3 = personRepository.save(person3);
                 }
 
                 Client client = new Client();
@@ -171,19 +174,16 @@ public class DatabaseController implements Serializable {
                 client.setInvoiceEmail(invoiceEmail);
                 client.setDescription("contact phone: " + contactPhone + ", skype: " + skype);
 
-                clientDao.merge(client);
+                client = clientRepository.save(client);
 
                 if (person1 != null) {
-                    person1.setPersonType(ptContactPerson);
-                    clientToContactPersonDao.merge(new ClientToContactPerson(client, person1));
+                    clientToContactPersonRepository.save(new ClientToContactPerson(client, person1));
                 }
                 if (person2 != null) {
-                    person2.setPersonType(ptContactPerson);
-                    clientToContactPersonDao.merge(new ClientToContactPerson(client, person2));
+                    clientToContactPersonRepository.save(new ClientToContactPerson(client, person2));
                 }
                 if (person3 != null) {
-                    person3.setPersonType(ptContactPerson);
-                    clientToContactPersonDao.merge(new ClientToContactPerson(client, person3));
+                    clientToContactPersonRepository.save(new ClientToContactPerson(client, person3));
                 }
                 count++;
             }
@@ -260,10 +260,10 @@ public class DatabaseController implements Serializable {
                 translator.setMinimumRate(parseDecimalOrZero(minimumRate));
 
                 if (!isBlank(serviceProvided)) {
-                    List<ServiceProvided> serviceProvidedList = serviceProvidedDao.findByName(serviceProvided);
+                    List<ServiceProvided> serviceProvidedList = serviceProvidedRepository.findByName(serviceProvided);
                     ServiceProvided serviceProvidedObject = new ServiceProvided(serviceProvided);
                     if (serviceProvidedList.isEmpty()) {
-                        serviceProvidedDao.merge(serviceProvidedObject);
+                        serviceProvidedObject = serviceProvidedRepository.save(serviceProvidedObject);
                         translator.setServiceProvided(serviceProvidedObject);
                     } else {
                         translator.setServiceProvided(serviceProvidedList.get(0));
@@ -271,10 +271,10 @@ public class DatabaseController implements Serializable {
                 }
 
                 if (!isBlank(translationArea)) {
-                    List<TranslationArea> translationAreaList = translationAreaDao.findByName(translationArea);
+                    List<TranslationArea> translationAreaList = translationAreaRepository.findByName(translationArea);
                     TranslationArea translationAreaObject = new TranslationArea(translationArea);
                     if (translationAreaList.isEmpty()) {
-                        translationAreaDao.merge(translationAreaObject);
+                        translationAreaObject = translationAreaRepository.save(translationAreaObject);
                         translator.setTranslationArea(translationAreaObject);
                     } else {
                         translator.setTranslationArea(translationAreaList.get(0));
@@ -282,15 +282,15 @@ public class DatabaseController implements Serializable {
                 }
 
                 translator.setLinkToProz(linkToProz);
-                translatorDao.merge(translator);
+                translator = translatorRepository.save(translator);
 
                 if (!isBlank(rating)) {
                     TranslatorFeedback feedback = new TranslatorFeedback();
 
-                    List<Rating> ratingList = ratingDao.findByName(rating);
+                    List<Rating> ratingList = ratingRepository.findByName(rating);
                     Rating ratingObject = new Rating(rating);
                     if (ratingList.isEmpty()) {
-                        ratingDao.merge(ratingObject);
+                        ratingObject = ratingRepository.save(ratingObject);
                         feedback.setRating(ratingObject);
                     } else {
                         feedback.setRating(ratingList.get(0));
@@ -298,7 +298,7 @@ public class DatabaseController implements Serializable {
                     feedback.setComment(lastComment);
                     feedback.setTranslator(translator);
 
-                    translatorFeedbackDao.merge(feedback);
+                    translatorFeedbackRepository.save(feedback);
                 }
                 count++;
             }
@@ -309,10 +309,10 @@ public class DatabaseController implements Serializable {
     }
 
     private Language resolveLanguage(String name) {
-        List<Language> languageList = languageDao.findByName(name);
+        List<Language> languageList = languageRepository.findByName(name);
         Language languageObject = new Language(name);
         if (languageList.isEmpty()) {
-            languageDao.merge(languageObject);
+            languageObject = languageRepository.save(languageObject);
             return languageObject;
         }
         return languageList.get(0);

@@ -11,17 +11,19 @@ import com.tms.model.entity.Country;
 import com.tms.model.entity.Person;
 import com.tms.model.entity.PersonType;
 import com.tms.model.entity.Segmentation;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.ClientToContactPersonDao;
-import com.tms.model.entity.dao.PersonDao;
-import com.tms.model.entity.dao.PersonTypeDao;
+import com.tms.repository.ClientRepository;
+import com.tms.repository.ClientToContactPersonRepository;
+import com.tms.repository.PersonRepository;
+import com.tms.repository.PersonTypeRepository;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,16 +37,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientService implements Serializable {
 
     @Autowired
-    private ClientDao clientDao;
+    private ClientRepository clientRepository;
 
     @Autowired
-    private PersonDao personDao;
+    private PersonRepository personRepository;
 
     @Autowired
-    private PersonTypeDao personTypeDao;
+    private PersonTypeRepository personTypeRepository;
 
     @Autowired
-    private ClientToContactPersonDao clientToContactPersonDao;
+    private ClientToContactPersonRepository clientToContactPersonRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public List<Client> search(String clientName, String clientAddress, Country country,
@@ -77,7 +82,7 @@ public class ClientService implements Serializable {
             sql.append(" AND (firstContactPerson.phone LIKE CONCAT('%', :contactPersonPhone, '%'))");
         }
 
-        Query query = clientDao.getEntityManager().createQuery(sql.toString());
+        Query query = entityManager.createQuery(sql.toString());
         for (Parameter p : query.getParameters()) {
             query.setParameter(p, pars.get(p.getName()));
         }
@@ -92,18 +97,18 @@ public class ClientService implements Serializable {
         client.setSaleManager(saleManager);
         client.setCountry(country);
         client.setSegmentation(segmentation);
-        clientDao.merge(client);
+        clientRepository.save(client);
     }
 
     @Transactional
     public Client updateContactPerson(Client client, Person oldPerson, Person newPerson) {
-        newPerson = personDao.merge(newPerson);
-        
-        ClientToContactPerson ctcp = clientToContactPersonDao.findBy(client, oldPerson);
-        ctcp.setPerson(newPerson);
-        clientToContactPersonDao.merge(ctcp);
+        newPerson = personRepository.save(newPerson);
 
-        return clientDao.findById(client.getId());
+        ClientToContactPerson ctcp = clientToContactPersonRepository.findBy(client, oldPerson);
+        ctcp.setPerson(newPerson);
+        clientToContactPersonRepository.save(ctcp);
+
+        return clientRepository.findOne(client.getId());
     }
 
     public List<Person> getContactPerson(Client client) {
@@ -118,12 +123,12 @@ public class ClientService implements Serializable {
     public void create(Client client, Person saleManager, Segmentation segmentation, Country country, List<Person> contacts) {
         client = checkClientForInssertDate(client);
 
-        PersonType CONTACT_TYPE = personTypeDao.CONTACT_PERSON();
+        PersonType CONTACT_TYPE = personTypeRepository.CONTACT_PERSON();
 
         client.setSaleManager(saleManager);
         client.setCountry(country);
         client.setSegmentation(segmentation);
-        client = clientDao.merge(client);
+        client = clientRepository.save(client);
 
         /**
          * set first contact
@@ -131,9 +136,9 @@ public class ClientService implements Serializable {
         if (contacts.size() > 0) {
             Person firstContact = contacts.get(0);
             firstContact.setPersonType(CONTACT_TYPE);
-            firstContact = personDao.merge(firstContact);
-            ClientToContactPerson ctcp = clientToContactPersonDao.findBy(client, firstContact);
-            clientToContactPersonDao.merge(ctcp);
+            firstContact = personRepository.save(firstContact);
+            ClientToContactPerson ctcp = clientToContactPersonRepository.findBy(client, firstContact);
+            clientToContactPersonRepository.save(ctcp);
             client.setFirstContactPerson(firstContact);
         }
 
@@ -141,19 +146,19 @@ public class ClientService implements Serializable {
             Person contact = contacts.get(i);
             if (contact.getId() == null) {
                 contact.setPersonType(CONTACT_TYPE);
-                contact = personDao.merge(contact);
+                contact = personRepository.save(contact);
             }
-            ClientToContactPerson ctcp = clientToContactPersonDao.findBy(client, contact);
-            clientToContactPersonDao.merge(ctcp);
+            ClientToContactPerson ctcp = clientToContactPersonRepository.findBy(client, contact);
+            clientToContactPersonRepository.save(ctcp);
         }
 
-        clientDao.merge(client);
+        clientRepository.save(client);
     }
 
     @Transactional
     public List<Client> getList() {
         try {
-            return clientDao.findAll();
+            return clientRepository.findAll();
         } catch (Exception ex) {
             return null;
         }

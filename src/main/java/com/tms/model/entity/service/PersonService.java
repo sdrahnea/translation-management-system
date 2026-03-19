@@ -6,7 +6,7 @@
 package com.tms.model.entity.service;
 
 import com.tms.model.entity.Person;
-import com.tms.model.entity.dao.PersonDao;
+import com.tms.repository.PersonRepository;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class PersonService implements Serializable {
     
     @Autowired
-    private PersonDao personDao;
-    
+    private PersonRepository personRepository;
+
     @Transactional
     public List<Person> getManagerList(){
-        return personDao.findAllManagers();
+        return personRepository.findAllManagers();
     }
     
 }

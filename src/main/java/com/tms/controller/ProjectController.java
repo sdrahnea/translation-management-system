@@ -14,18 +14,18 @@ import com.tms.model.entity.TimeZone;
 import com.tms.model.entity.TranslationArea;
 import com.tms.model.entity.Translator;
 import com.tms.model.entity.User;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.CurrencyDao;
-import com.tms.model.entity.dao.LanguageDao;
-import com.tms.model.entity.dao.PersonDao;
-import com.tms.model.entity.dao.ProjectTypeDao;
-import com.tms.model.entity.dao.StatusDao;
-import com.tms.model.entity.dao.TimeZoneDao;
-import com.tms.model.entity.dao.TranslationAreaDao;
 import com.tms.model.entity.service.ClientService;
 import com.tms.model.entity.service.PersonService;
 import com.tms.model.entity.service.ProjectService;
 import com.tms.repository.CatRepository;
+import com.tms.repository.ClientRepository;
+import com.tms.repository.CurrencyRepository;
+import com.tms.repository.LanguageRepository;
+import com.tms.repository.PersonRepository;
+import com.tms.repository.ProjectTypeRepository;
+import com.tms.repository.StatusRepository;
+import com.tms.repository.TimeZoneRepository;
+import com.tms.repository.TranslationAreaRepository;
 import com.tms.util.message.Message;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,23 +67,23 @@ public class ProjectController extends AbstractController<Project> implements Se
     @Autowired
     private PersonService personService;
     @Autowired
-    private LanguageDao languageDao;
+    private LanguageRepository languageRepository;
     @Autowired
-    private CurrencyDao currencyDao;
+    private CurrencyRepository currencyRepository;
     @Autowired
     private CatRepository catRepository;
     @Autowired
-    private ClientDao clientDao;
+    private ClientRepository clientRepository;
     @Autowired
-    private TranslationAreaDao translationAreaDao;
+    private TranslationAreaRepository translationAreaRepository;
     @Autowired
-    private ProjectTypeDao projectTypeDao;
+    private ProjectTypeRepository projectTypeRepository;
     @Autowired
-    private PersonDao personDao;
+    private PersonRepository personRepository;
     @Autowired
-    private TimeZoneDao timeZoneDao;
+    private TimeZoneRepository timeZoneRepository;
     @Autowired
-    private StatusDao statusDao;
+    private StatusRepository statusRepository;
     @Autowired
     HttpSession session;
 
@@ -167,15 +167,15 @@ public class ProjectController extends AbstractController<Project> implements Se
             callNotArchivedProjects();
             callArchivedProjects();
             callInvoiceProjects();
-            this.languages = languageDao.findAll();
-            this.currencys = currencyDao.findAll();
-            this.managers = personDao.findAllManagers();
-            this.projectTypes = projectTypeDao.findAll();
+            this.languages = languageRepository.findAll();
+            this.currencys = currencyRepository.findAll();
+            this.managers = personRepository.findAllManagers();
+            this.projectTypes = projectTypeRepository.findAll();
             this.cats = catRepository.findAll();
-            this.clients = clientDao.findAll();
-            this.translationAreas = translationAreaDao.findAll();
-            this.statuses = statusDao.findProjectStatus();
-            this.timeZoneList = timeZoneDao.findAll();
+            this.clients = clientRepository.findAll();
+            this.translationAreas = translationAreaRepository.findAll();
+            this.statuses = statusRepository.findProjectStatus();
+            this.timeZoneList = timeZoneRepository.findAll();
             this.project = new Project();
         } catch (Exception ex) {
             System.out.println("something bad happened: " + ex);

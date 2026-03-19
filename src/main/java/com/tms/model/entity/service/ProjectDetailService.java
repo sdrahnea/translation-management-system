@@ -12,10 +12,10 @@ import com.tms.model.entity.ProjectDetailTranslatorStatus;
 import com.tms.model.entity.ProjectType;
 import com.tms.model.entity.Status;
 import com.tms.model.entity.Translator;
-import com.tms.model.entity.dao.ProjectDao;
-import com.tms.model.entity.dao.ProjectDetailDao;
-import com.tms.model.entity.dao.ProjectDetailTranslatorStatusDao;
-import com.tms.model.entity.dao.StatusDao;
+import com.tms.repository.ProjectDetailRepository;
+import com.tms.repository.ProjectDetailTranslatorStatusRepository;
+import com.tms.repository.ProjectRepository;
+import com.tms.repository.StatusRepository;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -31,13 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectDetailService implements Serializable {
 
     @Autowired
-    private ProjectDetailDao dao;
+    private ProjectDetailRepository projectDetailRepository;
     @Autowired
-    private StatusDao statusDao;
+    private StatusRepository statusRepository;
     @Autowired
-    private ProjectDetailTranslatorStatusDao pdtsDao;
+    private ProjectDetailTranslatorStatusRepository projectDetailTranslatorStatusRepository;
     @Autowired
-    private ProjectDao projectDao;
+    private ProjectRepository projectRepository;
 
     @Transactional
     public ProjectDetail create(Project project, final Status status) {
@@ -49,12 +49,10 @@ public class ProjectDetailService implements Serializable {
         detail.setDeadlineHour(project.getDeadlineHour());
         detail.setCurrency(project.getCurrency());
 
-        detail = dao.merge(detail);
+        detail = projectDetailRepository.save(detail);
 
         project.addProjectDetail(detail);
-        projectDao.merge(project);
-        
-        projectDao.getEntityManager().flush();
+        projectRepository.saveAndFlush(project);
 
         return detail;
     }
@@ -75,7 +73,7 @@ public class ProjectDetailService implements Serializable {
         detail.setProjectType(project.getProjectType());
         detail.setDeadlineDate(project.getDeadlineDate());
         detail.setDeadlineHour(project.getDeadlineHour());
-        dao.merge(detail);
+        projectDetailRepository.save(detail);
     }
 
     @Transactional
@@ -97,7 +95,7 @@ public class ProjectDetailService implements Serializable {
         detail.setProjectType(project.getProjectType());
         detail.setDeadlineDate(project.getDeadlineDate());
         detail.setDeadlineHour(project.getDeadlineHour());
-        return dao.merge(detail);
+        return projectDetailRepository.save(detail);
     }
     
     @Transactional
@@ -119,56 +117,56 @@ public class ProjectDetailService implements Serializable {
         detail.setProjectType(projectType);
         detail.setDeadlineDate(project.getDeadlineDate());
         detail.setDeadlineHour(project.getDeadlineHour());
-        return dao.merge(detail);
+        return projectDetailRepository.save(detail);
     }
 
     @Transactional
     public void assignTranslator(final ProjectDetail projectDetail, final Translator translator) {
-        final Status status = statusDao.ASSIGN_TRANSLATOR();
+        final Status status = statusRepository.ASSIGN_TRANSLATOR();
         projectDetail.setStatus(status);
-        dao.merge(projectDetail);
-        pdtsDao.merge(new ProjectDetailTranslatorStatus(projectDetail, translator, status));
+        projectDetailRepository.save(projectDetail);
+        projectDetailTranslatorStatusRepository.save(new ProjectDetailTranslatorStatus(projectDetail, translator, status));
         checkAndUpdateStatus(projectDetail.getProject());
     }
 
     @Transactional
     public void assignTranslator(ProjectDetail projectDetail, ProjectDetailTranslatorStatus pdts) {
-        final Status status = statusDao.ASSIGN_TRANSLATOR();
+        final Status status = statusRepository.ASSIGN_TRANSLATOR();
         projectDetail.setStatus(status);
         projectDetail.setTranslator(pdts.getTranslator());
-        projectDetail = dao.merge(projectDetail);
-        
+        projectDetail = projectDetailRepository.save(projectDetail);
+
         pdts.setProjectDetail(projectDetail);
         pdts.setStatus(status);
-        pdtsDao.merge(pdts);
+        projectDetailTranslatorStatusRepository.save(pdts);
         checkAndUpdateStatus(projectDetail.getProject());
     }
 
     @Transactional
     public void readyToWorkTranslator(final ProjectDetail projectDetail, final Translator translator) {
-        final Status status = statusDao.READY_TO_WORK();
+        final Status status = statusRepository.READY_TO_WORK();
         projectDetail.setStatus(status);
-        dao.merge(projectDetail);
-        pdtsDao.merge(new ProjectDetailTranslatorStatus(projectDetail, translator, status));
+        projectDetailRepository.save(projectDetail);
+        projectDetailTranslatorStatusRepository.save(new ProjectDetailTranslatorStatus(projectDetail, translator, status));
         checkAndUpdateStatus(projectDetail.getProject());
     }
 
     @Transactional
     public void readyToWorkTranslator(final ProjectDetail projectDetail, ProjectDetailTranslatorStatus pdts) {
-        final Status status = statusDao.READY_TO_WORK();
+        final Status status = statusRepository.READY_TO_WORK();
         projectDetail.setStatus(status);
         pdts.setStatus(status);
-        dao.merge(projectDetail);
-        pdtsDao.merge(pdts);
+        projectDetailRepository.save(projectDetail);
+        projectDetailTranslatorStatusRepository.save(pdts);
         checkAndUpdateStatus(projectDetail.getProject());
     }
 
     @Transactional
     public void informTranslator(final ProjectDetail projectDetail, final Translator translator) {
-        final Status status = statusDao.INFORM_TRANSLATOR();
+        final Status status = statusRepository.INFORM_TRANSLATOR();
         projectDetail.setStatus(status);
-        dao.merge(projectDetail);
-        pdtsDao.merge(new ProjectDetailTranslatorStatus(projectDetail, translator, status));
+        projectDetailRepository.save(projectDetail);
+        projectDetailTranslatorStatusRepository.save(new ProjectDetailTranslatorStatus(projectDetail, translator, status));
         checkAndUpdateStatus(projectDetail.getProject());
     }
 
@@ -186,53 +184,53 @@ public class ProjectDetailService implements Serializable {
         detail.setSystemNotes("Project detail with status INFORM was created at " + (new Date()) + " date time. Translator " + translator.getName() + " was informed at " + (new Date()) + ".");
         detail.setStatus(status);
 
-        dao.merge(detail);
+        projectDetailRepository.save(detail);
         checkAndUpdateStatus(project);
     }
     
     public void markAsDelivered(ProjectDetail pd){
-        changeStaus(pd, statusDao.DELIVERED());
+        changeStaus(pd, statusRepository.DELIVERED());
         checkAndUpdateStatus(pd.getProject());
     }
     
     public void markAsPaid(ProjectDetail pd){
-        changeStaus(pd, statusDao.PAID());
+        changeStaus(pd, statusRepository.PAID());
         checkAndUpdateStatus(pd.getProject());
     }
     
     public void markAsClientPaid(ProjectDetail pd){
-        changeStaus(pd, statusDao.CLIENT_PAID());
+        changeStaus(pd, statusRepository.CLIENT_PAID());
         checkAndUpdateStatus(pd.getProject());
     }
     
     public void markAsTranslatorPaid(ProjectDetail pd){
-        changeStaus(pd, statusDao.TRANSLATOR_PAID());
+        changeStaus(pd, statusRepository.TRANSLATOR_PAID());
         checkAndUpdateStatus(pd.getProject());
     }
     
     public void markAsInvoiced(ProjectDetail pd){
-        changeStaus(pd, statusDao.INVOICED());
+        changeStaus(pd, statusRepository.INVOICED());
         checkAndUpdateStatus(pd.getProject());
     }
     
     private void changeStaus(ProjectDetail pd, Status status){
         pd.setStatus(status);
-        dao.merge(pd);     
+        projectDetailRepository.save(pd);
     }
     
     
 
     public List<ProjectDetailTranslatorStatus> getAll(final ProjectDetail projectDetail) {
-        return projectDetail == null ? null : pdtsDao.getAll(projectDetail);
+        return projectDetail == null ? null : projectDetailTranslatorStatusRepository.getAll(projectDetail);
     }
     
     public List<ProjectDetailTranslatorStatus> getAllInformedTranslators(final ProjectDetail projectDetail) {
-        return projectDetail == null ? null : pdtsDao.getAllInformedTranslators(projectDetail);
+        return projectDetail == null ? null : projectDetailTranslatorStatusRepository.getAllInformedTranslators(projectDetail);
     }
     
     
     public List<Translator> getAllAssignedTranslators(final ProjectDetail projectDetail) {
-        return projectDetail == null ? null : pdtsDao.getAllAssignedTranslators(projectDetail);
+        return projectDetail == null ? null : projectDetailTranslatorStatusRepository.getAllAssignedTranslators(projectDetail);
     }
 
     private String getNextLogicalId(final Project project) {
@@ -241,8 +239,8 @@ public class ProjectDetailService implements Serializable {
 
     private void checkAndUpdateStatus(Project project) {
         if (project != null) {
-            List<ProjectDetail> pdList = dao.findByProperty("project.id", project.getId());
-            if (pdList != null || !pdList.isEmpty()) {
+            List<ProjectDetail> pdList = projectDetailRepository.findByProjectId(project.getId());
+            if (pdList != null && !pdList.isEmpty()) {
                 Status status = pdList.get(0).getStatus();
                 for (ProjectDetail pd : pdList) {
                     if (status.getPriority() > pd.getStatus().getPriority()) {
@@ -250,7 +248,7 @@ public class ProjectDetailService implements Serializable {
                     }
                 }
                 project.setStatus(status);
-                projectDao.merge(project);
+                projectRepository.save(project);
             }
         }
     }

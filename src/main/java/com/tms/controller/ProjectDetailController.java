@@ -6,12 +6,12 @@ import com.tms.model.entity.ProjectDetail;
 import com.tms.model.entity.ProjectDetailTranslatorStatus;
 import com.tms.model.entity.ProjectType;
 import com.tms.model.entity.Translator;
-import com.tms.model.entity.dao.LanguageDao;
-import com.tms.model.entity.dao.NotSentEmailDao;
-import com.tms.model.entity.dao.ProjectDetailDao;
-import com.tms.model.entity.dao.ProjectTypeDao;
-import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.service.ProjectDetailService;
+import com.tms.repository.LanguageRepository;
+import com.tms.repository.NotSentEmailRepository;
+import com.tms.repository.ProjectDetailRepository;
+import com.tms.repository.ProjectTypeRepository;
+import com.tms.repository.TranslatorRepository;
 import com.tms.util.EmailSender;
 import com.tms.util.message.Message;
 import java.io.File;
@@ -59,25 +59,25 @@ public class ProjectDetailController extends AbstractController<ProjectDetail> i
     private List<Translator> allTranslators = new LinkedList<>();
 
     @Autowired
-    private ProjectDetailDao projectDetailDao;
+    private ProjectDetailRepository projectDetailRepository;
     @Autowired
-    private LanguageDao languageDao;
+    private LanguageRepository languageRepository;
     @Autowired
-    private ProjectTypeDao projectTypeDao;
+    private ProjectTypeRepository projectTypeRepository;
     @Autowired
     private ProjectDetailService projectDetailService;
     @Autowired
-    private TranslatorDao translatorDao;
+    private TranslatorRepository translatorRepository;
     @Autowired
-    private NotSentEmailDao notSentEmailDao;
+    private NotSentEmailRepository notSentEmailRepository;
 
     private List<ProjectDetailTranslatorStatus> pdtsList = new LinkedList<>();
 
     @PostConstruct
     public void init() {
-        this.languages = languageDao.findAll();
-        this.projectTypes = projectTypeDao.findAll();
-        this.allTranslators = translatorDao.findAll();
+        this.languages = languageRepository.findAll();
+        this.projectTypes = projectTypeRepository.findAll();
+        this.allTranslators = translatorRepository.findAll();
         //this.pdtsList = projectDetailService.getAll(projectDetail);
         this.pdtsList = projectDetailService.getAllInformedTranslators(projectDetail);
         this.assignedTranslators = projectDetailService.getAllAssignedTranslators(projectDetail);
@@ -120,8 +120,8 @@ public class ProjectDetailController extends AbstractController<ProjectDetail> i
         projectDetail.setDestinatonLanguage(selectedDestinationLanguage);
         projectDetail.setSourceLanguage(selectedSourceLanguage);
         projectDetail.setProjectType(selectedProjectType);
-        projectDetail = projectDetailDao.merge(projectDetail);
-        
+        projectDetail = projectDetailRepository.save(projectDetail);
+
         selectedDestinationLanguage = null;
         selectedSourceLanguage = null;
         selectedProjectType = null;
@@ -154,7 +154,7 @@ public class ProjectDetailController extends AbstractController<ProjectDetail> i
                 projectDetailService.informTranslator(projectDetail, translator);
                 NotSentEmail notSentEmail = sentEmailToTranslator(translator);
                 if (notSentEmail != null) {
-                    notSentEmailDao.merge(notSentEmail);
+                    notSentEmailRepository.save(notSentEmail);
                 }
             }
             boolean many = selectInformedTranslators.size() > 1;
@@ -239,7 +239,7 @@ public class ProjectDetailController extends AbstractController<ProjectDetail> i
             }
             this.projectDetail.setFileName(ufile.getFileName());
             this.projectDetail.setFileUUID(fileUUID);
-            projectDetailDao.merge(projectDetail);
+            projectDetailRepository.save(projectDetail);
 
         }
     }

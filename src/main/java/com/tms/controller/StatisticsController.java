@@ -6,11 +6,11 @@ import com.tms.model.entity.Currency;
 import com.tms.model.entity.Person;
 import com.tms.model.entity.Project;
 import com.tms.model.entity.Translator;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.CurrencyDao;
-import com.tms.model.entity.dao.PersonDao;
-import com.tms.model.entity.dao.TranslatorDao;
 import com.tms.model.entity.data.CustumResult;
+import com.tms.repository.ClientRepository;
+import com.tms.repository.CurrencyRepository;
+import com.tms.repository.PersonRepository;
+import com.tms.repository.TranslatorRepository;
 import com.tms.util.CompareUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -33,13 +33,13 @@ import org.springframework.stereotype.Component;
 public class StatisticsController extends Controller<Project> implements Serializable, ISearcher {
 
     @Autowired
-    private CurrencyDao currencyDao;
+    private CurrencyRepository currencyRepository;
     @Autowired
-    private ClientDao clientDao;
+    private ClientRepository clientRepository;
     @Autowired
-    private TranslatorDao translatorDao;
+    private TranslatorRepository translatorRepository;
     @Autowired
-    private PersonDao personDao;
+    private PersonRepository personRepository;
 
     private List<Currency> currencyList = new LinkedList<>();
     private List<Client> clientList = new LinkedList<>();
@@ -62,10 +62,10 @@ public class StatisticsController extends Controller<Project> implements Seriali
     @Override
     public void init() {
         try {
-            this.translatorList = translatorDao.findAll();
-            this.clientList = clientDao.findAll();
-            this.managerList = personDao.findAllManagers();
-            this.currencyList = currencyDao.findAll();
+            this.translatorList = translatorRepository.findAll();
+            this.clientList = clientRepository.findAll();
+            this.managerList = personRepository.findAllManagers();
+            this.currencyList = currencyRepository.findAll();
 
             refreshEntityList();
             refreshPayments();

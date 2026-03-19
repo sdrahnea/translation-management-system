@@ -1,6 +1,11 @@
 package com.tms.controller;
 
+import com.tms.repository.ClientRepository;
 import com.tms.repository.CountryRepository;
+import com.tms.repository.PersonRepository;
+import com.tms.repository.PersonTypeRepository;
+import com.tms.repository.ProjectRepository;
+import com.tms.repository.SegmentationRepository;
 import com.tms.util.message.Message;
 import com.tms.model.entity.Client;
 import com.tms.model.entity.ClientToContactPerson;
@@ -9,11 +14,6 @@ import com.tms.model.entity.Person;
 import com.tms.model.entity.PersonType;
 import com.tms.model.entity.Project;
 import com.tms.model.entity.Segmentation;
-import com.tms.model.entity.dao.ClientDao;
-import com.tms.model.entity.dao.PersonDao;
-import com.tms.model.entity.dao.PersonTypeDao;
-import com.tms.model.entity.dao.ProjectDao;
-import com.tms.model.entity.dao.SegmentationDao;
 import com.tms.model.entity.service.ClientService;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -40,16 +40,16 @@ public class ClientController extends AbstractController<Client> implements Seri
     @Autowired
     private CountryRepository countryRepository;
     @Autowired
-    private ClientDao clientDao;
+    private ClientRepository clientRepository;
     @Autowired
-    private PersonDao personDao;
+    private PersonRepository personRepository;
     @Autowired
-    private PersonTypeDao personTypeDao;
+    private PersonTypeRepository personTypeRepository;
     @Autowired
-    private SegmentationDao segmentationDao;
+    private SegmentationRepository segmentationRepository;
     @Autowired
-    private ProjectDao projectDao;
-    
+    private ProjectRepository projectRepository;
+
     
     private List<Project> pastProjects = new LinkedList<>();
     private Client client = new Client();
@@ -87,7 +87,7 @@ public class ClientController extends AbstractController<Client> implements Seri
     }
 
     private void callAllClient() {
-        this.clientList = clientDao.findAll();
+        this.clientList = clientRepository.findAll();
     }
 
     public void initClient(){
@@ -100,16 +100,16 @@ public class ClientController extends AbstractController<Client> implements Seri
         try {
             callAllClient();
             this.countries = countryRepository.findAll();
-            this.segmentations = segmentationDao.findAll();
-            this.saleManagers = personDao.findAllManagers();
-            this.ptContactPerson = personTypeDao.CONTACT_PERSON();
+            this.segmentations = segmentationRepository.findAll();
+            this.saleManagers = personRepository.findAllManagers();
+            this.ptContactPerson = personTypeRepository.CONTACT_PERSON();
         } catch (Exception ex) {
 
         }
     }
 
     private void refreshContactPersons() {
-        this.contactPersons = personDao.findAll();
+        this.contactPersons = personRepository.findAll();
     }
 
     public void addClientContactPerson() {
@@ -178,9 +178,9 @@ public class ClientController extends AbstractController<Client> implements Seri
             setSelectedCountry(client.getCountry());
             setSelectedSaleManager(client.getSaleManager());
             setSelectedSegmentation(client.getSegmentation());
-            pastProjects = projectDao.getProjects(client);
+            pastProjects = projectRepository.getProjects(client);
         }
-        this.saleManagers = personDao.findAllManagers();
+        this.saleManagers = personRepository.findAllManagers();
     }
 
     public List<Client> getClientList() {

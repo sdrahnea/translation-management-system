@@ -8,8 +8,8 @@ package com.tms.model.entity.service;
 import com.tms.model.entity.Person;
 import com.tms.model.entity.Role;
 import com.tms.model.entity.User;
-import com.tms.model.entity.dao.RoleDao;
-import com.tms.model.entity.dao.UserDao;
+import com.tms.repository.RoleRepository;
+import com.tms.repository.UserRepository;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,18 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     @Autowired
-    private UserDao userDao;
-    
+    private UserRepository userRepository;
+
     @Autowired
-    private RoleDao roleDao;
-    
+    private RoleRepository roleRepository;
+
     @Transactional
     public void createManager(final User user, final Person person) {
-        Role manageRole = roleDao.find("MANAGER");
+        Role manageRole = roleRepository.find("MANAGER");
         user.setName(person.getName());
         user.setInsertDate(new Date());
         user.setRole(manageRole);
-        userDao.merge(user);
+        userRepository.save(user);
     }
 
 }
