@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "language")
 @XmlRootElement
-public class Language implements Serializable {
+public class Language extends CoreEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

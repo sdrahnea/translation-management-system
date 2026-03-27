@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "not_sent_email")
 @XmlRootElement
-public class NotSentEmail implements Serializable {
+public class NotSentEmail extends CoreEntity implements Serializable {
  
     private static final long serialVersionUID = 1L;
     @Id

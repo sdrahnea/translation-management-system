@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "person_type")
 @XmlRootElement
-public class PersonType implements Serializable {
+public class PersonType extends CoreEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

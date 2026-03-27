@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "payment_method")
 @XmlRootElement
-public class PaymentMethod implements Serializable{
+public class PaymentMethod extends CoreEntity implements Serializable{
     
     private static final long serialVersionUID = 1L;
     @Id
