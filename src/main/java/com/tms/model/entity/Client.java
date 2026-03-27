@@ -32,14 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "client")
 @XmlRootElement
-public class Client implements Serializable {
+public class Client extends CoreEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 50)
     @Column(name = "name")
     private String name;
@@ -85,7 +79,7 @@ public class Client implements Serializable {
     }
 
     public Client(Integer id, String name) {
-        this.id = id;
+        setId(id);
         this.name = name;
     }
 
@@ -115,14 +109,6 @@ public class Client implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -205,12 +191,6 @@ public class Client implements Serializable {
         this.insertDate = insertDate;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
 
     public Collection<ClientToContactPerson> getClientToContactPersons() {
         return clientToContactPersons;
@@ -221,20 +201,7 @@ public class Client implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Client)) {
-            return false;
-        }
-        Client other = (Client) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "com.tms.model.entity.Client[ id=" + id + " ]";
+        return "com.tms.model.entity.Client[ id=" + getId() + " ]";
     }
 }

@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Cat extends CoreEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @Size(max = 50)
     @Column(name = "name")
     private String name;
