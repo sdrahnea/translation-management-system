@@ -21,4 +21,12 @@ public abstract class CoreEntity implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
 }
