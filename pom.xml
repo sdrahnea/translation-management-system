@@ -27,7 +27,7 @@
         <ehcache.core.version>2.6.9</ehcache.core.version>
         <commons.dbcp2.version>2.12.0</commons.dbcp2.version>
         <jsf.version>2.3.9</jsf.version>
-        <primefaces.version>6.0</primefaces.version>
+        <primefaces.version>8.0</primefaces.version>
         <primefaces.themes.version>1.0.10</primefaces.themes.version>
         <poi.version>5.3.0</poi.version>
         <h2.version>2.1.214</h2.version>
