@@ -30,7 +30,7 @@
         <primefaces.version>6.0</primefaces.version>
         <primefaces.themes.version>1.0.10</primefaces.themes.version>
         <poi.version>5.3.0</poi.version>
-        <h2.version>2.1.214</h2.version>
+        <h2.version>2.2.220</h2.version>
 
         <!-- Needed for legacy Spring/JSF reflection on Java 25 -->
         <jvm.add.opens>
